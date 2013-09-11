@@ -1,6 +1,7 @@
 from webapp2 import redirect, uri_for
 from src.app.forms.event import CreateEventForm
 from src.app.handlers.base import BaseHandler
+from src.app.models.bot import Bot
 from src.app.models.event import Event
 
 
@@ -16,7 +17,7 @@ class CreateEventHandler(BaseHandler):
         context = {
             'create_form': create_form,
             'events': [{'id': 'create', 'name': 'Create new event'}] if not events else
-                      [{'id': event.rowid, 'name': event.name} for event in events]
+                      [{'id': event.id, 'name': event.name} for event in events]
         }
         return context
 
@@ -43,6 +44,18 @@ class SelectEventHandler(BaseHandler):
     def get(self, event_id):
         if isinstance(event_id, basestring):
             event_id = int(event_id)
+
         event = Event.get_by_id(event_id)
         if not event:
             return redirect(uri_for('home'))
+
+        bots = Bot.get_by_event(event_id, order='weightclass asc, name desc')
+        registered_bots = [bot for bot in bots if bot.registered_ind == 'Y']
+
+        context = {
+            'event': event,
+            'bots_registered': len(registered_bots),
+            'bots_total': len(bots)
+        }
+
+        self.render_response('event.html', **context)

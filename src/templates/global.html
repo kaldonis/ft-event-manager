@@ -28,9 +28,23 @@
                 <a class="brand" href="/">FingerTech Event Manager</a>
                 <ul class="nav">
                     {% block nav %}
-                        <li><a href='bots.php?event=$event'>Bots</a><li>
-                        <li><a href='brackets.php?event=$event'>Brackets</a></li>
-                        <li><a href='schedule.php?event=$event'>Schedule</a></li>
+                        <li><a href='/bots/'>Bots</a><li>
+                        {% if brackets %}
+                            <li class='dropdown'>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    Brackets
+                                    <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu">
+                                        {% for item in brackets %}
+                                            <li><a href="/bracket/{{ item.id }}/">{{ item.weightclass_code }}</a></li>
+                                        {% endfor %}
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li><a href='/bracket/'>Brackets</a></li>
+                        {% endif %}
+                        <li><a href='/schedule/'>Schedule</a></li>
                         <li><a href='/'>Exit Event</a></li>
                     {% endblock %}
                 </ul>
