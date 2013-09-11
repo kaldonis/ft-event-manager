@@ -1,0 +1,317 @@
+/*
+	FingerTech Event Manager
+	style.css
+*/
+
+/* Begin Sticky Footer */
+html, body {height: 100%;}
+
+.center { margin-left: auto; margin-right: auto; }
+
+#wrap {min-height: 100%;}
+
+#main {overflow:auto;
+	padding-bottom: 65px;}  /* must be same height as the footer */
+
+#footer {position: relative;
+	margin-top: -65px; /* negative value of footer height */
+	height: 45px;
+	clear:both;} 
+
+/*Opera Fix*/
+body:before {
+	content:"";
+	height:100%;
+	float:left;
+	width:0;
+	margin-top:-32767px;/
+}
+/* End Sticky Footer */
+
+p {
+	margin-top: 0px;
+	margin-bottom: 10px;
+}
+
+body {
+	background: #FFF;/* url(../images/cloth_alike.png) repeat;*/
+	color: #111;
+}
+
+input.text { margin-bottom:12px; width:95%; padding: .4em; }
+fieldset { padding:0; border:0; margin-top:25px; }
+
+.ui-dialog .ui-state-error { padding: .3em; }
+.validateTips { border: 1px solid transparent; padding: 0.3em; }
+
+h2#bracket-title {
+	text-align: center;
+	width: 100%;
+}
+
+a {
+	text-decoration: none;
+	color: #0000FF;
+}
+
+a:hover {
+	text-decoration: underline;
+	color: #0000BB;
+}
+
+h1,h2,h3 {
+	padding: 10px 0px;
+	font-weight: bold;
+}
+
+h1 {
+	font-size: 2em;
+}
+
+h2 {
+	font-size: 1.5em;
+}
+
+h3 {
+	font-size: 1.1em;
+}
+button, input#import {
+	padding: .8em, .6em;
+	border: 1px solid #d3d3d3;
+	background: #e6e6e6 url(../images/ui-bg_glass_75_e6e6e6_1x400.png);
+	color: #555555;
+	font-size: 1.1em;
+}
+
+button:hover, input#import:hover {
+	color: #000;
+	background: #FFF;
+	cursor: pointer;
+}
+/*
+.heading {
+	width: 100%;
+	text-decoration: underline;
+	margin-bottom: 0px;
+	margin-top: 25px;
+}*/
+
+div.left {
+	width: 45%;
+	float: left;
+}
+
+div.right {
+	width: 45%;
+	float: right;
+}
+
+div#dialog-form, div.dialog-form {
+	display: none;
+}
+
+div#header {
+	text-align: center;
+}
+
+div#nav {
+	width: 100%;
+	background: #000 url('../images/dark_fish_skin.png') repeat;
+	color: #FFF;
+}
+
+div#nav a {
+	color: #FFF;
+}
+
+div#nav a:hover {
+	color: #EEE;
+}
+
+div#footer {
+	text-align: center;
+	clear: both;
+}
+
+img.botpicsmall {
+	width: 150px;
+}
+
+img.botpiclarge {
+	max-width: 400px;
+}
+
+ul#navList {
+	display: table;
+	margin: 0 auto;
+	list-style-type: none;
+	line-height: 33px;
+	min-width: 0;
+}
+
+ul#navList li {
+	float: left;
+	padding: 0px 20px;
+	margin: 0;
+	width: auto;
+	display: block;
+}
+
+table#bots {
+	width: 100%;
+	margin: 1em 0; 
+	border-collapse: collapse; 
+}
+
+table#bots tr {
+	background-color: #FFF;
+	-webkit-transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	-o-transition: all 0.5s ease;
+	transition: all 0.5s ease;
+}
+
+table#bots tr.registered {
+	background-color: #EEE;
+	-webkit-transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	-o-transition: all 0.5s ease;
+	transition: all 0.5s ease;
+}
+
+table#bots td, table#bots th {
+	vertical-align: middle !important;
+}
+
+table#bracket-list {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+table#bracket-list th {
+	text-align: left;
+	font-weight: bold;
+	padding: 3px;
+}
+
+table#bracket-list td {
+	padding: 3px;
+}
+
+table#event-details {
+	width: 100%;
+	margin-bottom: 10px;
+}
+
+table#event-details td {
+	padding: 3px;
+	font-size: 1.3em;
+	text-align: center;	
+	font-weight: bold;
+	font-style: italic;
+}
+
+table#event-details td#event-name  {
+	font-size: 1.8em;
+	font-style: normal;
+}
+
+#bots_paginate {
+	display: none;
+}
+
+#dialog-form select, .dialog-form select {
+	margin-bottom: 12px;
+	padding: .4em;
+	width: 95%;
+}
+
+/* BlockUI */
+div.blockMsg {
+	display: none;
+}
+
+
+/* Generic Form Properties */
+
+form span.error {
+    display: block;
+}
+
+table.form {
+	width: 100%;
+}
+
+table.form td.label {
+	text-align: right;
+}
+
+table.form select {
+	width: 100%;
+}
+
+table.form td.submit {
+	text-align: center;
+}
+
+/* Form Validation */
+
+label.error {
+	display: none !important; 
+}
+
+input.error {
+	background-color:#F00;	
+}
+
+select {
+	background-color: #FFF;
+}
+
+select.error {
+	background-color: #F00;
+}
+
+#countdown-wrapper {
+	display: table;
+	width: 100%;
+	height: 100%;
+}
+
+#countdown-content {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+#countdown-table {
+	width: 100%;
+	text-align: center;
+	font-size: 60px;
+	font-weight: 50;	
+}
+
+#countdown {
+	text-indent: -.12em;
+	font: 220px "Courier", sans-serif;
+	font-weight: 900;
+	display: inline-block;
+	margin: 0 auto;
+	line-height: 1;
+	width: 100%;
+}
+
+#botBlue {
+	padding-left: 10%;
+	text-align: left;
+	color: blue;
+}
+
+#botRed {
+	padding-right: 10%;
+	text-align: right;	
+	color: red;
+}
+
+#timer {
+	padding: 0% 25%;
+}

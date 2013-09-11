@@ -1,0 +1,317 @@
+table#editmatchtable {
+	text-align: center;
+	width: 100%;
+}
+
+div#match-results {
+	text-align: center;
+}
+
+table#editmatchtable td.botname{
+	width: 45%;
+	padding: 5px;
+}
+
+table#editmatchtable td.spacer {
+	width: 10%;
+}
+
+.nobg {
+	background: none !important;
+}
+
+#timer-link {
+	color: blue;
+	text-decoration: none;
+}
+
+div.bracket {
+	display: table;
+	margin: 0px auto 100px auto;
+	text-align: center;
+}
+
+div.bracket div.round {
+	display: table-cell;
+	height: 100%;
+	width: 130px;
+	vertical-align: middle;
+}
+
+div.bracket div.round div.match, div.bracket div.round div.final {
+	vertical-align: middle;	
+	position: relative;
+	padding-right: 20px;
+	background-position: right;
+	background-repeat: no-repeat;
+}
+
+div.bracket div.round div.team {
+	vertical-align: middle;	
+	color: #FFF;
+	overflow: hidden;
+}
+
+div.bracket div.round div.team span.matchWinner {
+	font-weight: bold;
+}
+
+div.bracket div.round div.team span.matchLoser {
+	text-decoration: line-through;
+}
+
+div.bracket div.round div.number {
+	display: inline-block;
+	line-height: 0px;
+	height: 0px;
+	vertical-align: middle;
+	text-align: center;
+	color: #000;
+	font-size: .8em;
+}
+
+div.bracket div.round div.number a {
+	font-weight: bold;
+}
+
+div.bracket div.round div.team1  {
+	background: url(../images/team-bg-blue.jpg) repeat-x center center;
+
+}
+div.bracket div.round div.team2 {
+	background: url(../images/team-bg-orange.jpg) repeat-x center center;
+}
+
+div.bracket div.A div.match div.team{
+	height: 30px;
+	line-height: 30px;
+}
+div.bracket div.B div.match div.team, div.bracket div.C div.match div.team, div.bracket div.D div.match div.team{
+	height: 60px;
+	line-height: 60px;
+}
+
+div.bracket div.D, div.bracket div.F{
+	padding-top: 60px;
+}
+
+div.bracket div.E div.match div.team, div.bracket div.F div.match div.team, div.bracket div.H div.match div.team {
+	height: 120px;
+	line-height: 120px;
+}
+
+div.bracket div.H, div.bracket div.J {
+	padding-top: 180px;
+}
+
+div.bracket div.G div.match div.team, div.bracket div.J div.match div.team, div.bracket div.L div.match div.team {
+	height: 240px;
+	line-height: 240px;
+}
+
+div.bracket div.L, div.bracket div.N {
+	padding-top: 420px;
+}
+
+div.bracket div.I div.match div.team, div.bracket div.N div.match div.team, div.bracket div.P div.match div.team {
+	height: 480px;
+	line-height: 480px;
+}
+
+div.bracket div.P, div.bracket div.R {
+	padding-top: 900px;
+}
+
+/* Bracket lines , A side*/
+div.bracket div.A div.match {
+	background-image: url(../images/bracket-A.png);
+}
+
+div.bracket div.C div.match, div.bracket div.E div.final {
+	background-image: url(../images/bracket-C.png);
+}
+
+div.bracket div.E div.match, div.bracket div.G div.final {
+	background-image: url(../images/bracket-E.png);
+}
+
+div.bracket div.G div.match, div.bracket div.I div.final {
+	background-image: url(../images/bracket-G.png);
+}
+
+div.bracket div.I div.match, div.bracket div.K div.final {
+	background-image: url(../images/bracket-I.png);
+}
+
+/* Bracket lines, B side */
+div.bracket div.B div.match {
+	background-image: url(../images/bracket-B.png);
+}
+
+div.bracket div.D div.match {
+	background-image: url(../images/bracket-D.png);
+}
+
+div.bracket div.F div.match {
+	background-image: url(../images/bracket-F.png);	
+}
+
+div.bracket div.H div.match {
+	background-image: url(../images/bracket-H.png);	
+}
+
+div.bracket div.J div.match {
+	background-image: url(../images/bracket-J.png);
+}
+
+div.bracket div.L div.match {
+	background-image: url(../images/bracket-L.png);
+}
+
+div.bracket div.N div.match {
+	background-image: url(../images/bracket-N.png);
+}
+
+div.bracket div.P div.match {
+	background-image: url(../images/bracket-P.png);
+}
+
+/* B-side final match stuff*/
+div.bracket div.R div.final { /* 32 chart, B side */
+	background-image: url(../images/bracket-R-final.png);
+	height: 480px;
+	line-height: 480px;
+}
+
+div.bracket div.N div.final { /* 16 chart, B side */
+	background-image: url(../images/bracket-N-final.png);
+	height: 240px;
+	line-height: 240px;
+}
+
+div.bracket div.J div.final { /* 8 chart, B side */
+	background-image: url(../images/bracket-J-final.png);
+	height: 120px;
+	line-height: 120px;
+}
+
+div.bracket div.F div.final { /* 4 chart, B side */
+	background-image: url(../images/bracket-F-final.png);
+	height: 60px;
+	line-height: 60px;
+}
+
+/* A-side final match stuff */
+
+div.bracket div.K div.final div.team { /* 32 chart, A side */
+	height: 480px;
+	line-height: 480px;
+}
+
+div.bracket div.I div.final div.team{ /* 16 chart, A side */
+	height: 240px;
+	line-height: 240px;
+}
+
+div.bracket div.G div.final div.team { /* 8 chart, A side */
+	height: 120px;
+	line-height: 120px;
+}
+
+div.bracket div.E div.final div.team { /* 4 chart, A side */
+	height: 60px;
+	line-height: 60px;
+}
+
+div.bracket div.K div.final  { /* 32 chart, A side */
+	padding-top: 480px;
+	background-position: right bottom;
+}
+
+div.bracket div.I div.final { /* 16 chart, A side */
+	padding-top: 240px;
+	background-position: right bottom;
+}
+
+div.bracket div.G div.final  { /* 8 chart, A side */
+	padding-top: 120px;
+	background-position: right bottom;
+
+}
+
+div.bracket div.E div.final  { /* 4 chart, A side */
+	padding-top: 60px;
+	background-position: right bottom;
+}
+
+/* A-side winner stuff */
+div.bracket div.M div.winner {
+	padding-top: 480px;
+	height: 480px;
+	line-height: 480px;
+}
+
+div.bracket div.K div.winner {
+	padding-top: 240px;
+	height: 240px;
+	line-height: 240px;
+}
+
+div.bracket div.I div.winner {
+	padding-top: 120px;
+	height: 120px;
+	line-height: 120px;
+}
+
+div.bracket div.G div.winner {
+	padding-top: 60px;
+	height: 60px;
+	line-height: 60px;
+}
+
+/* Round Robin */
+div#bracket-rr {
+	display: block;
+	border-collapse: collapse;
+	margin-bottom: 100px;
+}
+
+table#round-robin {
+	margin: -50px auto 0px auto;
+	background: #EEE;
+}
+
+table#round-robin .hover {
+	background-color: #CCC;
+}
+
+.hover2 {
+	color: #0D0 !important;
+	/*font-size:1.5em;*/
+	font-weight: bold;
+}
+
+table#round-robin td, table#round-robin th {
+	padding: 0px 8px;
+	height: 50px;
+	width: 75px;
+	border: 1px solid #AAA;
+	vertical-align: middle;
+	text-align: center;
+}
+
+table#round-robin .rr-bot-name {
+	font-weight: bold;
+}
+
+table#round-robin td.rr-blank {
+	background-color: #555;
+}
+
+table#round-robin .match-undecided {
+	cursor: pointer;
+}
+
+table#round-robin span.rr-num-wins {
+	font-weight: normal !important;
+}

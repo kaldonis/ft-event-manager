@@ -1,0 +1,45 @@
+{% import 'macros/forms.html' as forms %}
+<html>
+	<head>
+		<title>{% block title %}{% endblock %}</title>
+  		<link rel="stylesheet" href="/static/css/reset.css" />
+  		<link rel="stylesheet" href="/static/css/bracket.css" />
+  		<link rel="stylesheet" href="/static/css/jquery-ui.css" />
+  		<link rel="stylesheet" href="/static/css/datatables.css" />
+		<link rel="stylesheet" href="/static/css/style.css" />
+        <link rel="stylesheet" href="/static/css/bootstrap.css" />
+		<!--[if !IE 7]><style type="text/css"> #wrap {display:table;height:100%} </style><![endif]-->
+  		<script src="/static/js/jquery-1.9.1.js"></script>
+  		<script src="/static/js/jquery-ui.js"></script>
+		<script src="/static/js/jquery.validate.js"></script>
+		<script src="/static/js/jquery.dataTables.min.js"></script>
+		<script src="/static/js/jquery.blockUI.js"></script>
+		<script src="/static/js/jquery.bracket.js"></script>
+		<script src="/static/js/jquery.timer.js"></script>
+		<script src="/static/js/bootstrap.min.js"></script>
+
+		<script>$.blockUI.defaults.css = {}; $.blockUI.defaults.overlayCSS.opacity=0; $(document).ajaxStart($.blockUI).ajaxStop($.unblockUI);</script>
+        {% block head %}{% endblock %}
+	</head>
+	<body>
+        <div id='wrap'>
+            <div class="navbar">
+              <div class="navbar-inner">
+                <a class="brand" href="/">FingerTech Event Manager</a>
+                <ul class="nav">
+                    {% block nav %}
+                        <li><a href='bots.php?event=$event'>Bots</a><li>
+                        <li><a href='brackets.php?event=$event'>Brackets</a></li>
+                        <li><a href='schedule.php?event=$event'>Schedule</a></li>
+                        <li><a href='/'>Exit Event</a></li>
+                    {% endblock %}
+                </ul>
+              </div>
+            </div>
+            <div class='container'>
+            {% block main %}{% endblock %}
+            </div>
+            <?php getFooter($page); ?>
+        </div>
+	</body>
+</html>
