@@ -4,7 +4,12 @@ import webapp2
 
 from routes import ROUTES
 
-config = {'webapp2_static.static_file_path': './static'}
+config = {
+    'webapp2_static.static_file_path': './static',
+    'globals': {
+        'uri_for' : webapp2.uri_for
+    },
+}
 web_app = webapp2.WSGIApplication(routes=ROUTES, config=config, debug=True)
 
 def main():

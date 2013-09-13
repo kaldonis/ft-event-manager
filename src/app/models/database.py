@@ -20,28 +20,34 @@ class DBObject(object):
         return {attr: value for attr, value in attr_and_values if not callable(value)}
 
     @classmethod
-    def get_all(cls, **kwargs):
+    def get_all(cls, order=None):
         db = DataInterface(CONSTANTS.DB_NAME)
-        return [cls(**item) for item in db.fetch_all(cls.__name__, kwargs.get('order')) if item]
+        return [cls(**item) for item in db.fetch_all(cls.__name__, order) if item]
 
     @classmethod
-    def get_multiple(cls, sql, **kwargs):
+    def get_multiple(cls, sql):
         db = DataInterface(CONSTANTS.DB_NAME)
         return [cls(**item) for item in db.fetch_multiple(sql) if item]
 
     @classmethod
     def get_by_id(cls, id):
+        if isinstance(id, basestring):
+            id = int(id)
         db = DataInterface(CONSTANTS.DB_NAME)
         sql = "SELECT * FROM %s WHERE id = %d" % (cls.__name__, id)
         result = db.fetch_one(sql)
         return cls(**result) if result else None
 
     @classmethod
-    def get_by_event(cls, event_id, order):
+    def get_by_event(cls, event_id, order=None):
         sql = "SELECT * FROM %s WHERE event_id = %d" % (cls.__name__, event_id)
         if order:
             sql = "%s ORDER BY %s" % (sql, order)
         return cls.get_multiple(sql)
+
+    def delete(self):
+        sql = "DELETE FROM %s WHERE id = %d" % (self.__class__.__name__, self.id)
+        return self.db.delete(sql)
 
     def put(self):
         attribute_values = self.attribute_values()
@@ -51,7 +57,7 @@ class DBObject(object):
         else:
             sql = "INSERT INTO %s (%s) VALUES (%s)" \
                   % (self.__class__.__name__, ', '.join(attribute_values.keys()), ', '.join(["?" for _ in attribute_values.values()]))
-        id = self.db.execute(sql, attribute_values.values())
+        id = self.db.put(sql, attribute_values.values())
         if id:
             self.id = id
 
@@ -74,32 +80,63 @@ class DataInterface(object):
         self.database.row_factory = dict_factory
 
     def fetch_all(self, entity, order):
-        with self.database:
-            cursor = self.database.cursor()
-            if order:
-                order = 'order by %s' % order
-            sql = "SELECT * FROM %s %s" % (entity, order)
-            logging.info("Fetch all: %s" % sql)
-            cursor.execute(sql)
-            return cursor.fetchall()
+        try:
+            with self.database:
+                cursor = self.database.cursor()
+                if order:
+                    order = 'order by %s' % order
+                sql = "SELECT * FROM %s %s" % (entity, order)
+                logging.info("Fetch all: %s" % sql)
+                cursor.execute(sql)
+                return cursor.fetchall()
+        except Exception as e:
+            return e.message
 
     def fetch_multiple(self, sql):
-        with self.database:
-            cursor = self.database.cursor()
-            logging.info("Fetch multiple: %s" % sql)
-            cursor.execute(sql)
-            return cursor.fetchall()
+        try:
+            with self.database:
+                cursor = self.database.cursor()
+                logging.info("Fetch multiple: %s" % sql)
+                cursor.execute(sql)
+                return cursor.fetchall()
+        except Exception as e:
+            return e.message
 
     def fetch_one(self, sql):
-        with self.database:
-            cursor = self.database.cursor()
-            logging.info("Fetch one: %s" % sql)
-            cursor.execute(sql)
-            return cursor.fetchone()
+        try:
+            with self.database:
+                cursor = self.database.cursor()
+                logging.info("Fetch one: %s" % sql)
+                cursor.execute(sql)
+                return cursor.fetchone()
+        except Exception as e:
+            return e.message
 
-    def execute(self, sql, values):
-        with self.database:
-            cursor = self.database.cursor()
-            logging.info("Execute: %s" %sql)
-            cursor.execute(sql, values)
-            return cursor.lastid
+    def put(self, sql, values=None):
+        try:
+            with self.database:
+                cursor = self.database.cursor()
+                logging.info("Execute: %s" % sql)
+                cursor.execute(sql, values)
+                return cursor.lastid
+        except Exception as e:
+            return e.message
+
+    def execute(self, sql):
+        try:
+            with self.database:
+                cursor = self.database.cursor()
+                logging.info("Execute: %s" % sql)
+                cursor.execute(sql)
+        except Exception as e:
+            return e.message
+
+    def delete(self, sql):
+        try:
+            with self.database:
+                cursor = self.database.cursor()
+                logging.info("Delete: %s" % sql)
+                cursor.execute(sql)
+        except Exception as e:
+            return e.message
+

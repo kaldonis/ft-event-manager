@@ -7,7 +7,9 @@
   		<link rel="stylesheet" href="/static/css/jquery-ui.css" />
   		<link rel="stylesheet" href="/static/css/datatables.css" />
 		<link rel="stylesheet" href="/static/css/style.css" />
+		<link rel="stylesheet" href="/static/css/bots.css" />
         <link rel="stylesheet" href="/static/css/bootstrap.css" />
+        <link rel="stylesheet" href="/static/css/jquery.gritter.css" />
 		<!--[if !IE 7]><style type="text/css"> #wrap {display:table;height:100%} </style><![endif]-->
   		<script src="/static/js/jquery-1.9.1.js"></script>
   		<script src="/static/js/jquery-ui.js"></script>
@@ -17,18 +19,20 @@
 		<script src="/static/js/jquery.bracket.js"></script>
 		<script src="/static/js/jquery.timer.js"></script>
 		<script src="/static/js/bootstrap.min.js"></script>
+		<script src="/static/js/jquery.gritter.js"></script>
+		<script src="/static/js/EM.Notification.js"></script>
 
 		<script>$.blockUI.defaults.css = {}; $.blockUI.defaults.overlayCSS.opacity=0; $(document).ajaxStart($.blockUI).ajaxStop($.unblockUI);</script>
         {% block head %}{% endblock %}
 	</head>
 	<body>
         <div id='wrap'>
-            <div class="navbar">
+            <div class="navbar navbar-static-top">
               <div class="navbar-inner">
                 <a class="brand" href="/">FingerTech Event Manager</a>
                 <ul class="nav">
                     {% block nav %}
-                        <li><a href='/bots/'>Bots</a><li>
+                        <li><a href='/{{ event.id }}/bots/'>Bots</a><li>
                         {% if brackets %}
                             <li class='dropdown'>
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -36,15 +40,15 @@
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
-                                        {% for item in brackets %}
-                                            <li><a href="/bracket/{{ item.id }}/">{{ item.weightclass_code }}</a></li>
-                                        {% endfor %}
+                                    {% for item in brackets %}
+                                        <li><a href="/{{ item.id }}/">{{ item.weightclass_code }}</a></li>
+                                    {% endfor %}
                                 </ul>
                             </li>
                         {% else %}
-                            <li><a href='/bracket/'>Brackets</a></li>
+                            <li><a href='/{{ event.id }}/bracket/'>Brackets</a></li>
                         {% endif %}
-                        <li><a href='/schedule/'>Schedule</a></li>
+                        <li><a href='/{{ event.id }}/schedule/'>Schedule</a></li>
                         <li><a href='/'>Exit Event</a></li>
                     {% endblock %}
                 </ul>

@@ -15,7 +15,7 @@
     </a>
     <ul class="dropdown-menu">
         {% for item in events %}
-            <li><a href="/event/{{ item.id }}/">{{ item.name }}</a></li>
+            <li><a href="/{{ item.id }}/">{{ item.name }}</a></li>
         {% endfor %}
     </ul>
 </li>

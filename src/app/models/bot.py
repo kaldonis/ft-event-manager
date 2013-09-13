@@ -19,3 +19,17 @@ class Bot(DBObject):
     photo_url = None
     seed_number = None
     bracket_id = None
+
+    def register(self):
+        """
+        registers the bot
+        """
+        sql = "UPDATE %s SET registered_ind = 'Y' WHERE id = %d" % (self.__class__.__name__, self.id)
+        return self.db.execute(sql)
+
+    def unregister(self):
+        """
+        unregisters the bot
+        """
+        sql = "UPDATE %s SET registered_ind = 'N' WHERE id = %d" % (self.__class__.__name__, self.id)
+        return self.db.execute(sql)

@@ -1,0 +1,58 @@
+{% extends "global.html" %}
+{% block title %}FingerTech Event Manager{% endblock %}
+{% block head %}
+    <script src="/static/js/knockout-2.3.0.js"></script>
+    <script src="/static/js/EM.Bots.js"></script>
+{% endblock %}
+{% block main %}
+    <div class='row'>
+        <div class='span12'>
+            <h1>{{ event.name }} Bots</h1>
+        </div>
+    </div>
+    <div class='row relative'>
+        <div class='span6'>
+            <form method='POST' class='form' id='import-bots-form'>
+                <h4>Import Bots</h4>
+                {{ import_form.file }} {{ import_form.submit(class_='btn btn-primary') }}
+            </form>
+        </div>
+        <div class='span6'>
+            <button class='btn' id='add-bot-btn'>Add Bot</button>
+        </div>
+    </div>
+    <div class='row'>
+        <div class='span12'>
+            <h4>Bots</h4>
+            <table class='table table-hover' id='bot-table'>
+                <thead>
+                    <th></th>
+                    <th>ID</th>
+                    <th>Bot</th>
+                    <th>Team</th>
+                    <th>Class</th>
+                    <th></th>
+                    <th></th>
+                </thead>
+                <tbody data-bind='template: { name: "bot-row-template", foreach: bots }'></tbody>
+            </table>
+        </div>
+    </div>
+    <script type='text/html' id='bot-row-template'>
+        <tr>
+            <td><input type='checkbox' data-bind='checked: $data.isRegistered' /></td>
+            <td data-bind="text: $data.id"></td>
+            <td data-bind="text: $data.botName"></td>
+            <td data-bind="text: $data.teamName"></td>
+            <td data-bind="text: $data.weightclass"></td>
+            <td class='delete'><i class="icon-edit pointer" data-bind='click: function(data, event) { $parent.editBot($data) }'></i></td>
+            <td class='delete'><i class="icon-remove-sign pointer" data-bind='click: function(data, event) { $parent.deleteBot($data) }'></i></td>
+        </tr>
+    </script>
+
+    <script>
+        var bots = new Bots();
+        bots.initBots(jQuery.parseJSON('{{ bots | safe }}'));
+        ko.applyBindings(bots);
+    </script>
+{% endblock %}

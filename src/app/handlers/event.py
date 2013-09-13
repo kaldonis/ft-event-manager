@@ -49,7 +49,7 @@ class SelectEventHandler(BaseHandler):
         if not event:
             return redirect(uri_for('home'))
 
-        bots = Bot.get_by_event(event_id, order='weightclass asc, name desc')
+        bots = Bot.get_by_event(event_id)
         registered_bots = [bot for bot in bots if bot.registered_ind == 'Y']
 
         context = {

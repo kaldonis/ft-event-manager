@@ -1,0 +1,29 @@
+#input-bots-form input {
+    padding-top: 5px;
+}
+
+#bots_paginate {
+	display: none;
+}
+
+img.botpicsmall {
+	width: 150px;
+}
+
+img.botpiclarge {
+	max-width: 400px;
+}
+
+table#bot-table td {
+    vertical-align: middle;
+}
+
+table#bot-table td.delete {
+    text-align: center;
+}
+
+#add-bot-btn {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+}
