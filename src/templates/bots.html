@@ -33,7 +33,7 @@
         <div class='span12'>
             <table class='table table-hover' id='bot-table'>
                 <thead>
-                    <th></th>
+                    <th><input type='checkbox' data-bind='checked: registerAll'/></th>
                     <th>ID</th>
                     <th>Bot</th>
                     <th>Team</th>
@@ -46,7 +46,7 @@
         </div>
     </div>
     <script type='text/html' id='bot-row-template'>
-        <tr>
+        <tr data-bind="css: { success: isRegistered(), error: !isRegistered()}">
             <td><input type='checkbox' data-bind='checked: $data.isRegistered' /></td>
             <td data-bind="text: $data.id"></td>
             <td data-bind="text: $data.botName"></td>

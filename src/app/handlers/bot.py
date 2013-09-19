@@ -1,4 +1,5 @@
 import json
+import logging
 from webapp2 import redirect, uri_for
 from app.forms.bot import ImportBotsForm, AddBotForm
 from app.handlers.base import BaseHandler
@@ -6,13 +7,14 @@ from app.models.bot import Bot
 from app.models.event import Event
 
 
-class BotTableHandler(BaseHandler):
+class BotListHandler(BaseHandler):
     """
     renders the list of bots for the event
     """
     def get(self, event_id):
         event = Event.get_by_id(event_id)
         if not event:
+            logging.warning("Tried to look up bots for event %s, redirecting to home", event_id)
             return redirect(uri_for('home'))
 
         bots = Bot.get_by_event(event.id, 'weightclass asc, name asc')
@@ -81,6 +83,35 @@ class RegisterBotHandler(BaseHandler):
         self.render_response('json.json', **context)
 
 
+class RegisterAllBotsHandler(BaseHandler):
+    """
+    handler for registering all bots
+    """
+    def post(self, event_id):
+        bots = Bot.get_by_event(int(event_id))
+
+        try:
+            for bot in bots:
+                bot.register()
+
+            response = {
+                'successful': True,
+                'message': None
+            }
+
+        except Exception as e:
+            response = {
+                'successful': False,
+                'message': e.message
+            }
+
+        context = {
+            'data': json.dumps(response)
+        }
+
+        self.render_response('json.json', **context)
+
+
 class UnregisterBotHandler(BaseHandler):
     """
     handler for unregistering a bot
@@ -98,6 +129,35 @@ class UnregisterBotHandler(BaseHandler):
             response = {
                 'successful': False,
                 'message': 'Invalid bot id %d' % bot_id
+            }
+
+        context = {
+            'data': json.dumps(response)
+        }
+
+        self.render_response('json.json', **context)
+
+
+class UnregisterAllBotsHandler(BaseHandler):
+    """
+    handler for unregistering all bots
+    """
+    def post(self, event_id):
+        bots = Bot.get_by_event(int(event_id))
+
+        try:
+            for bot in bots:
+                bot.unregister()
+
+            response = {
+                'successful': True,
+                'message': None
+            }
+
+        except Exception as e:
+            response = {
+                'successful': False,
+                'message': e.message
             }
 
         context = {

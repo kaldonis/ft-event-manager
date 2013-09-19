@@ -3,16 +3,37 @@ Bots = function() {
 
     self.bots = ko.observableArray();
 
-    self.add_name = ko.observable('');
-    self.add_team_name = ko.observable('');
-    self.add_team_email = ko.observable('');
-    self.add_team_city = ko.observable('');
-    self.add_team_state = ko.observable('');
-    self.add_category = ko.observable('');
-    self.add_weightclass = ko.observable('');
-    self.add_multibot_ind = ko.observable('');
-    self.add_notes = ko.observable('');
-    self.add_photo_url = ko.observable('');
+    self.registerAll = ko.observable(false);
+    self.registerAll.subscribe(function () {
+        var url;
+        var action;
+        if(self.registerAll()) {
+            url = 'registerall/';
+            action = 'registered';
+        }
+        else {
+            url = 'unregisterall/';
+            action = 'unregistered';
+        }
+        $.ajax({
+            url: url,
+            type: 'POST',
+            dataType: 'json',
+            success: function(data) {
+                if(data.successful) {
+                    ko.utils.arrayForEach(self.bots(), function(item) {
+                        item.isRegistered(self.registerAll());
+                    });
+                }
+                else {
+                    EMNotifyError('All bots NOT ' + action + '. ' + data.message);
+                }
+            },
+            error: function() {
+                EMNotifyError('All bots NOT ' + action + '. Unknown error.');
+            }
+        });
+    });
 
     self.BotViewModel = function(id, botName, teamName, teamEmail, teamCity, teamState, category, weightclass, photoUrl, multibot, isRegistered) {
         var self = this;
@@ -27,19 +48,6 @@ Bots = function() {
         self.photoUrl = ko.observable(photoUrl);
         self.multibotInd = ko.observable(multibot);
         self.isRegistered = ko.observable(isRegistered);
-
-        self.addBotParams = {
-            add_name: new ko.observable(''),
-            add_team_name: new ko.observable(''),
-            add_team_email: new ko.observable(''),
-            add_team_city: new ko.observable(''),
-            add_team_state: new ko.observable(''),
-            add_category: new ko.observable(''),
-            add_weightclass: new ko.observable(''),
-            add_multibot_ind: new ko.observable(''),
-            add_notes: new ko.observable(''),
-            add_photo_url: new ko.observable('')
-        };
 
         self.isRegistered.subscribe(function () {
             var url;
@@ -61,14 +69,18 @@ Bots = function() {
                         EMNotifySuccess(self.botName() + ' successfully ' + action + '.');
                     }
                     else {
-                        EMNotifyError(self.botName() + ' NOT  ' + action + '. ' + data.message);
+                        EMNotifyError(self.botName() + ' NOT ' + action + '. ' + data.message);
                     }
                 },
                 error: function() {
-                    EMNotifyError(self.botName() + ' NOT  ' + action + '. Unknown error.');
+                    EMNotifyError(self.botName() + ' NOT ' + action + '. Unknown error.');
                 }
             });
         });
+    };
+
+    self.toggleRegisterAll = function() {
+
     };
 
     self.find = function(bot_id) {
@@ -78,23 +90,25 @@ Bots = function() {
     };
 
     self.deleteBot = function(bot) {
-        $.ajax({
-            url: 'delete/' + bot.id() + '/',
-            type: 'POST',
-            dataType: 'json',
-            success: function(data) {
-                if(data.successful) {
-                    EMNotifySuccess(bot.botName() + ' successfully deleted.');
-                    self.bots.remove(bot);
+        if (confirm('Are you sure you want to delete ' + bot.botName() + '?')) {
+            $.ajax({
+                url: 'delete/' + bot.id() + '/',
+                type: 'POST',
+                dataType: 'json',
+                success: function(data) {
+                    if(data.successful) {
+                        EMNotifySuccess(bot.botName() + ' successfully deleted.');
+                        self.bots.remove(bot);
+                    }
+                    else {
+                        EMNotifyError(bot.botName() + ' NOT deleted. ' + data.message);
+                    }
+                },
+                error: function() {
+                    EMNotifyError(bot.botName() + ' NOT deleted. Unknown error.');
                 }
-                else {
-                    EMNotifyError(bot.botName() + ' NOT deleted. ' + data.message);
-                }
-            },
-            error: function() {
-                EMNotifyError(bot.botName() + ' NOT deleted. Unknown error.');
-            }
-        });
+            });
+        }
     };
 
     self.cancelAddEditBot = function() {

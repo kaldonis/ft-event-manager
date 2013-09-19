@@ -27,8 +27,8 @@
         <form method='POST' id='create-event-form'>
             {{ forms.form_field(create_form.name, with_label=True) }}
             {{ forms.form_field(create_form.location, with_label=True) }}
-            {{ forms.form_field(create_form.start_date, with_label=True, class_="datepicker") }}
-            {{ forms.form_field(create_form.end_date, with_label=True, class_="datepicker") }}
+            {{ forms.form_field(create_form.start_date, with_label=True, class='datepicker') }}
+            {{ forms.form_field(create_form.end_date, with_label=True, class='datepicker') }}
             {{ forms.form_field(create_form.submit, class_="btn btn-primary") }}
         </form>
     </div>

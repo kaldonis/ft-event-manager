@@ -123,6 +123,7 @@ class DataInterface(object):
             with self.database:
                 cursor = self.database.cursor()
                 logging.info("Execute: %s" % sql)
+                logging.info("Values: %s" % values)
                 cursor.execute(sql, values)
                 return cursor.lastrowid
         except Exception as e:
