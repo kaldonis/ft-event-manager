@@ -1,6 +1,9 @@
 import logging
+import os
 
 import webapp2
+from app.domain.constants import CONSTANTS
+import bootstrap
 
 from routes import ROUTES
 
@@ -13,6 +16,9 @@ config = {
 web_app = webapp2.WSGIApplication(routes=ROUTES, config=config, debug=True)
 
 def main():
+    if not os.path.exists(CONSTANTS.DB_NAME):
+        bootstrap.bootstrap()
+
     from paste import httpserver
     logging.basicConfig(level=logging.INFO)
     logging.info("Event manager started")

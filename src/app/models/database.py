@@ -1,7 +1,7 @@
 import sqlite3
 import logging
 
-from app.constants import CONSTANTS
+from app.domain.constants import CONSTANTS
 
 
 class DBObject(object):

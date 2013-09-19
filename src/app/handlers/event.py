@@ -16,7 +16,7 @@ class CreateEventHandler(BaseHandler):
 
         context = {
             'create_form': create_form,
-            'events': [{'id': '', 'name': 'Create new event'}] if not events else
+            'events': [{'id': '#', 'name': 'Create new event'}] if not events else
                       [{'id': event.id, 'name': event.name} for event in events]
         }
         return context
@@ -33,9 +33,9 @@ class CreateEventHandler(BaseHandler):
             context.update({'create_form': create_form})
             self.render_response('home.html', **context)
         else:
-            del create_form.data['submit']
-            event = Event(**(create_form.data))
+            event = Event(**({key: value for key, value in create_form.data.iteritems() if key != 'submit'}))
             event.put()
+            self.redirect("%d/" % event.id)
 
 
 class SelectEventHandler(BaseHandler):

@@ -1,6 +1,7 @@
+import os
 import sqlite3
 from webapp2 import redirect, uri_for
-from app.constants import CONSTANTS
+from app.domain.constants import CONSTANTS
 from app.handlers.base import BaseHandler
 
 BOOTSTRAP_CREATE_TABLES = """
@@ -102,13 +103,18 @@ BOOTSTRAP_CREATE_WEIGHTCLASSES = """
 
 """
 
+def bootstrap():
+    if os.path.exists(CONSTANTS.DB_NAME):
+        os.remove(CONSTANTS.DB_NAME)
+
+    database = sqlite3.connect(CONSTANTS.DB_NAME)
+    cursor = database.cursor()
+
+    cursor.executescript(BOOTSTRAP_CREATE_TABLES)
+    cursor.executescript(BOOTSTRAP_CREATE_BOT_CATEGORIES)
+    cursor.executescript(BOOTSTRAP_CREATE_WEIGHTCLASSES)
+
 class Bootstrap(BaseHandler):
     def get(self):
-        database = sqlite3.connect(CONSTANTS.DB_NAME)
-        cursor = database.cursor()
-
-        cursor.executescript(BOOTSTRAP_CREATE_TABLES)
-        cursor.executescript(BOOTSTRAP_CREATE_BOT_CATEGORIES)
-        cursor.executescript(BOOTSTRAP_CREATE_WEIGHTCLASSES)
-
+        bootstrap()
         return redirect(uri_for('home'))
