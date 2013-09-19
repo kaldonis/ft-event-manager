@@ -15,3 +15,12 @@ EMNotifyError = function(text) {
         time: 2000
     });
 };
+
+EMNotifyCustomError = function(title, text) {
+    $.gritter.add({
+        title: title,
+        text: text,
+        image: '/static/images/error.png',
+        time: 2000
+    });
+};

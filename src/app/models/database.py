@@ -1,7 +1,7 @@
 import sqlite3
 import logging
 
-from src.app.constants import CONSTANTS
+from app.constants import CONSTANTS
 
 
 class DBObject(object):
@@ -61,6 +61,9 @@ class DBObject(object):
         if id:
             self.id = id
 
+    def to_dict(self):
+        return self.__dict__
+
 
 def dict_factory(cursor, row):
     d = {}
@@ -90,6 +93,7 @@ class DataInterface(object):
                 cursor.execute(sql)
                 return cursor.fetchall()
         except Exception as e:
+            logging.error(e.message)
             return e.message
 
     def fetch_multiple(self, sql):
@@ -100,6 +104,7 @@ class DataInterface(object):
                 cursor.execute(sql)
                 return cursor.fetchall()
         except Exception as e:
+            logging.error(e.message)
             return e.message
 
     def fetch_one(self, sql):
@@ -110,6 +115,7 @@ class DataInterface(object):
                 cursor.execute(sql)
                 return cursor.fetchone()
         except Exception as e:
+            logging.error(e.message)
             return e.message
 
     def put(self, sql, values=None):
@@ -118,8 +124,9 @@ class DataInterface(object):
                 cursor = self.database.cursor()
                 logging.info("Execute: %s" % sql)
                 cursor.execute(sql, values)
-                return cursor.lastid
+                return cursor.lastrowid
         except Exception as e:
+            logging.error(e.message)
             return e.message
 
     def execute(self, sql):
@@ -129,6 +136,7 @@ class DataInterface(object):
                 logging.info("Execute: %s" % sql)
                 cursor.execute(sql)
         except Exception as e:
+            logging.error(e.message)
             return e.message
 
     def delete(self, sql):
@@ -138,5 +146,6 @@ class DataInterface(object):
                 logging.info("Delete: %s" % sql)
                 cursor.execute(sql)
         except Exception as e:
+            logging.error(e.message)
             return e.message
 

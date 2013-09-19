@@ -1,4 +1,4 @@
-from src.app.models.database import DBObject
+from app.models.database import DBObject
 
 
 class Bracket(DBObject):

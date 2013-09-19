@@ -1,4 +1,4 @@
-from wtforms import Form, TextField, DateField, SelectField, SubmitField, validators, ValidationError
+from wtforms import Form, TextField, DateField, SubmitField, validators, ValidationError
 
 
 class CreateEventForm(Form):

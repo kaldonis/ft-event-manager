@@ -27,3 +27,15 @@ table#bot-table td.delete {
     right: 0px;
     bottom: 0px;
 }
+
+#import-bots-form input[type="file"] {
+    padding-top: 5px;
+}
+
+.icon-edit {
+    color: lawngreen;
+}
+
+.icon-remove-sign {
+    color: red;
+}

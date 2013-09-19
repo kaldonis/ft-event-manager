@@ -1,9 +1,9 @@
 import json
 from webapp2 import redirect, uri_for
-from src.app.forms.bot import ImportBotsForm
-from src.app.handlers.base import BaseHandler
-from src.app.models.bot import Bot
-from src.app.models.event import Event
+from app.forms.bot import ImportBotsForm, AddBotForm
+from app.handlers.base import BaseHandler
+from app.models.bot import Bot
+from app.models.event import Event
 
 
 class BotTableHandler(BaseHandler):
@@ -15,25 +15,15 @@ class BotTableHandler(BaseHandler):
         if not event:
             return redirect(uri_for('home'))
 
-        bots = Bot.get_by_event(event.id, 'weightclass asc, name desc')
+        bots = Bot.get_by_event(event.id, 'weightclass asc, name asc')
         import_form = ImportBotsForm()
+        add_form = AddBotForm()
 
         context = {
             'event': event,
-            'bots': json.dumps([{
-                'id': bot.id,
-                'botName': bot.name,
-                'teamName': bot.team_name,
-                'teamEmail': bot.team_email,
-                'teamCity': bot.team_city,
-                'teamState': bot.team_state,
-                'category': bot.category,
-                'weightclass': bot.weightclass,
-                'photoUrl': bot.photo_url,
-                'multibot': True if bot.multibot_ind == 'Y' else False,
-                'isRegistered': True if bot.registered_ind == 'Y' else False
-            } for bot in bots]),
-            'import_form': import_form
+            'bots': json.dumps([bot.to_dict() for bot in bots]),
+            'import_form': import_form,
+            'add_form': add_form
         }
 
         self.render_response('bots.html', **context)
@@ -108,6 +98,68 @@ class UnregisterBotHandler(BaseHandler):
             response = {
                 'successful': False,
                 'message': 'Invalid bot id %d' % bot_id
+            }
+
+        context = {
+            'data': json.dumps(response)
+        }
+
+        self.render_response('json.json', **context)
+
+
+class AddBotHandler(BaseHandler):
+    """
+    handler for adding a bot
+    """
+    def post(self, event_id):
+        add_form = AddBotForm(self.request.POST)
+
+        if add_form.validate():
+            bot_data = add_form.data
+            bot_data['event_id'] = int(event_id)
+            bot_data['bid'] = 0
+            bot_data['registered_ind'] = 'Y'
+            bot = Bot(**bot_data)
+            bot.put()
+            response = {
+                'successful': True,
+                'message': json.dumps(bot.to_dict())
+            }
+        else:
+            response = {
+                'successful': False,
+                'message': json.dumps(add_form.errors)
+            }
+
+        context = {
+            'data': json.dumps(response)
+        }
+
+        self.render_response('json.json', **context)
+
+
+class UpdateBotHandler(BaseHandler):
+    """
+    handler for updating a bot
+    """
+    def post(self, event_id, bot_id):
+        update_form = AddBotForm(self.request.POST)
+
+        if update_form.validate():
+            bot_data = update_form.data
+            del bot_data['id']  # don't want to update this, EVER
+            bot_data['multibot_ind'] = 'Y' if bot_data['multibot_ind'] else 'N'
+            bot = Bot.get_by_id(bot_id)
+            bot.__dict__.update(bot_data)
+            bot.put()
+            response = {
+                'successful': True,
+                'message': json.dumps(bot.to_dict())
+            }
+        else:
+            response = {
+                'successful': False,
+                'message': json.dumps(update_form.errors)
             }
 
         context = {

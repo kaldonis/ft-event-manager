@@ -1,7 +1,7 @@
 import webapp2
 from webapp2_extras import jinja2
 
-from src.app.models.bracket import Bracket
+from app.models.bracket import Bracket
 
 
 class BaseHandler(webapp2.RequestHandler):

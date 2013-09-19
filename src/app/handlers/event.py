@@ -1,8 +1,8 @@
 from webapp2 import redirect, uri_for
-from src.app.forms.event import CreateEventForm
-from src.app.handlers.base import BaseHandler
-from src.app.models.bot import Bot
-from src.app.models.event import Event
+from app.forms.event import CreateEventForm
+from app.handlers.base import BaseHandler
+from app.models.bot import Bot
+from app.models.event import Event
 
 
 class CreateEventHandler(BaseHandler):

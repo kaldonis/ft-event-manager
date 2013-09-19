@@ -1,4 +1,5 @@
-from src.app.models.database import DBObject
+import json
+from app.models.database import DBObject
 
 
 class Bot(DBObject):
@@ -33,3 +34,18 @@ class Bot(DBObject):
         """
         sql = "UPDATE %s SET registered_ind = 'N' WHERE id = %d" % (self.__class__.__name__, self.id)
         return self.db.execute(sql)
+    
+    def to_dict(self):
+        return {
+                'id': self.id,
+                'botName': self.name,
+                'teamName': self.team_name,
+                'teamEmail': self.team_email,
+                'teamCity': self.team_city,
+                'teamState': self.team_state,
+                'category': self.category,
+                'weightclass': self.weightclass,
+                'photoUrl': self.photo_url,
+                'multibot': True if self.multibot_ind == 'Y' else False,
+                'isRegistered': True if self.registered_ind == 'Y' else False
+        }
