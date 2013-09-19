@@ -1,4 +1,5 @@
 import sqlite3
+from webapp2 import redirect, uri_for
 from app.constants import CONSTANTS
 from app.handlers.base import BaseHandler
 
@@ -105,6 +106,9 @@ class Bootstrap(BaseHandler):
     def get(self):
         database = sqlite3.connect(CONSTANTS.DB_NAME)
         cursor = database.cursor()
+
         cursor.executescript(BOOTSTRAP_CREATE_TABLES)
         cursor.executescript(BOOTSTRAP_CREATE_BOT_CATEGORIES)
         cursor.executescript(BOOTSTRAP_CREATE_WEIGHTCLASSES)
+
+        return redirect(uri_for('home'))
