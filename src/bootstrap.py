@@ -1,5 +1,6 @@
 import sqlite3
 from app.constants import CONSTANTS
+from app.handlers.base import BaseHandler
 
 BOOTSTRAP_CREATE_TABLES = """
     CREATE TABLE bot (
@@ -100,9 +101,10 @@ BOOTSTRAP_CREATE_WEIGHTCLASSES = """
 
 """
 
-def bootstrap():
-    database = sqlite3.connect(CONSTANTS.DB_NAME)
-    cursor = database.cursor()
-    cursor.execute(BOOTSTRAP_CREATE_TABLES)
-    cursor.execute(BOOTSTRAP_CREATE_BOT_CATEGORIES)
-    cursor.execute(BOOTSTRAP_CREATE_WEIGHTCLASSES)
+class Bootstrap(BaseHandler):
+    def get(self):
+        database = sqlite3.connect(CONSTANTS.DB_NAME)
+        cursor = database.cursor()
+        cursor.execute(BOOTSTRAP_CREATE_TABLES)
+        cursor.execute(BOOTSTRAP_CREATE_BOT_CATEGORIES)
+        cursor.execute(BOOTSTRAP_CREATE_WEIGHTCLASSES)

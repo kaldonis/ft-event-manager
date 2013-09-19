@@ -4,7 +4,7 @@ from app.handlers.static import StaticFileHandler
 
 ROUTES = [
     Route('/', handler='app.handlers.event.CreateEventHandler', name='home'),
-    Route('/bootstrap/', handler='app.bootstrap.bootstrap', name='bootstrap'),
+    Route('/bootstrap/', handler='bootstrap.Bootstrap', name='bootstrap'),
     Route('/<:\d+>/bots/', handler='app.handlers.bot.BotTableHandler', name='bot-table'),
     Route('/<:\d+>/bracket/<:\d+>/', handler='app.handlers.bracket.BracketHandler', name='bracket'),
     Route('/<:\d+>/schedule/', handler='app.handlers.schedule.ScheduleHandler', name='schedule'),
