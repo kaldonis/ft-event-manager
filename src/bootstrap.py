@@ -105,6 +105,6 @@ class Bootstrap(BaseHandler):
     def get(self):
         database = sqlite3.connect(CONSTANTS.DB_NAME)
         cursor = database.cursor()
-        cursor.executemany(BOOTSTRAP_CREATE_TABLES)
-        cursor.executemany(BOOTSTRAP_CREATE_BOT_CATEGORIES)
-        cursor.executemany(BOOTSTRAP_CREATE_WEIGHTCLASSES)
+        cursor.executescript(BOOTSTRAP_CREATE_TABLES)
+        cursor.executescript(BOOTSTRAP_CREATE_BOT_CATEGORIES)
+        cursor.executescript(BOOTSTRAP_CREATE_WEIGHTCLASSES)
