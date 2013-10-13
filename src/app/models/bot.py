@@ -1,8 +1,9 @@
 import json
+from app.models import BracketSearchMixin, EventSearchMixin, WeightclassSearchMixin
 from app.models.database import DBObject
 
 
-class Bot(DBObject):
+class Bot(DBObject, BracketSearchMixin, EventSearchMixin, WeightclassSearchMixin):
     bid = None
     registered_ind = None
     event_id = None

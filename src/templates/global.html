@@ -25,9 +25,10 @@
                 <a class="brand" href="/">FingerTech Event Manager</a>
                 <ul class="nav">
                     {% block nav %}
-                        <li><a href='/{{ event.id }}/bots/'>Bots</a><li>
+                        {% block eventnav %}<li>{% endblock %}<a href='/{{ event.id }}/'>{{ event.name }}</a><li>
+                        {% block botsnav %}<li>{% endblock %}<a href='/{{ event.id }}/bots/'>Bots</a><li>
                         {% if brackets %}
-                            <li class='dropdown'>
+                            {% block bracketsnav1 %}<li class='dropdown'>{% endblock %}>
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     Brackets
                                     <b class="caret"></b>
@@ -39,9 +40,10 @@
                                 </ul>
                             </li>
                         {% else %}
-                            <li><a href='/{{ event.id }}/bracket/'>Brackets</a></li>
+                            {% block bracketsnav2 %}<li>{% endblock %}<a href='/{{ event.id }}/brackets/'>Brackets</a></li>
                         {% endif %}
-                        <li><a href='/{{ event.id }}/schedule/'>Schedule</a></li>
+                        {% block sessionsnav %}<li>{% endblock %}<a href='/{{ event.id }}/sessions/'>Sessions</a></li>
+                        {% block schedulenav %}<li>{% endblock %}<a href='/{{ event.id }}/schedule/'>Schedule</a></li>
                         <li><a href='/'>Exit Event</a></li>
                     {% endblock %}
                 </ul>

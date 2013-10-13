@@ -20,7 +20,12 @@ ROUTES = [
     Route('/<:\d+>/bots/unregisterall/', handler='app.handlers.bot.UnregisterAllBotsHandler', name='unregister-all-bots'),
 
     # Bracket Handlers
-    Route('/<:\d+>/brackets/<:\d+>/', handler='app.handlers.bracket.BracketListHandler', name='bracket'),
+    Route('/<:\d+>/brackets/', handler='app.handlers.bracket.BracketListHandler', name='bracket'),
+    Route('/<:\d+>/brackets/<:\d+>/', handler='app.handlers.bracket.SingleBracketHandler', name='single-bracket'),
+    Route('/<:\d+>/brackets/<:[A-z]+>/generate/', handler='app.handlers.bracket.GenerateBracketHandler', name='generate-bracket'),
+
+    # Session Handlers
+    Route('/<:\d+>/sessions/', handler='app.handlers.session.SessionListHandler', name='session'),
 
     # Schedule Handlers
     Route('/<:\d+>/schedule/', handler='app.handlers.schedule.ScheduleListHandler', name='schedule'),

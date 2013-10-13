@@ -38,13 +38,6 @@ class DBObject(object):
         result = db.fetch_one(sql)
         return cls(**result) if result else None
 
-    @classmethod
-    def get_by_event(cls, event_id, order=None):
-        sql = "SELECT * FROM %s WHERE event_id = %d" % (cls.__name__, event_id)
-        if order:
-            sql = "%s ORDER BY %s" % (sql, order)
-        return cls.get_multiple(sql)
-
     def delete(self):
         sql = "DELETE FROM %s WHERE id = %d" % (self.__class__.__name__, self.id)
         return self.db.delete(sql)
