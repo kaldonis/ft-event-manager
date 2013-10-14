@@ -1,8 +1,9 @@
 from app.domain.constants import CONSTANTS
+from app.models import CodeSearchMixin
 from app.models.database import DBObject, DataInterface
 
 
-class Weightclass(DBObject):
+class Weightclass(DBObject, CodeSearchMixin):
     code = None
     name = None
     description = None

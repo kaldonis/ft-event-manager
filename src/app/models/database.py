@@ -30,6 +30,12 @@ class DBObject(object):
         return [cls(**item) for item in db.fetch_multiple(sql) if item]
 
     @classmethod
+    def get_single(cls, sql):
+        db = DataInterface(CONSTANTS.DB_NAME)
+        item = db.fetch_one(sql)
+        return cls(**item) if item else None
+
+    @classmethod
     def get_by_id(cls, id):
         if isinstance(id, basestring):
             id = int(id)

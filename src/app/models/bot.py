@@ -1,9 +1,10 @@
 import json
-from app.models import BracketSearchMixin, EventSearchMixin, WeightclassSearchMixin
+from app.domain.constants import CONSTANTS
+from app.models import BracketSearchMixin, EventSearchMixin, WeightclassEventSearchMixin, DataInterface
 from app.models.database import DBObject
 
 
-class Bot(DBObject, BracketSearchMixin, EventSearchMixin, WeightclassSearchMixin):
+class Bot(DBObject, BracketSearchMixin, EventSearchMixin, WeightclassEventSearchMixin):
     bid = None
     registered_ind = None
     event_id = None
@@ -21,6 +22,14 @@ class Bot(DBObject, BracketSearchMixin, EventSearchMixin, WeightclassSearchMixin
     photo_url = None
     seed_number = None
     bracket_id = None
+
+    @classmethod
+    def get_by_bracket_seed(cls, event_id, bracket_id, seed):
+        db = DataInterface(CONSTANTS.DB_NAME)
+        sql = "SELECT * FROM %s WHERE event_id = %d AND seed_number = %d AND bracket_id = %d" % (cls.__name__, int(event_id), seed, bracket_id)
+        result = db.fetch_one(sql)
+
+        return cls(**(result)) if result else None
 
     def register(self):
         """

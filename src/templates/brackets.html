@@ -19,22 +19,43 @@
             {% for key, value in event_brackets.iteritems() %}
                 <tr><td>
                     {% if value.generated %}
-                        <a href="/{{ event.id }}/brackets/{{ bracket.id }}/">
+                        <a href="/{{ event.id }}/brackets/{{ value.id }}/">
                     {% endif %}
                     <h5>{{ key|e }} - {{ value.total_bots }} competitor(s)</h5>
                     {% if value.generated %}
                         </a>
                     {% endif %}
                 </td><td>
-                    <a href='/{{ event.id }}/brackets/{{ key }}/generate/'>
-                        {% if value.generated %}
-                            <button class="btn btn-warning">Regenerate</button>
-                        {% else %}
-                            <button class="btn btn-primary">Generate</button>
-                        {% endif %}
-                    </a>
+                    {% if value.generated %}
+                        <button class="btn btn-warning" onclick="$('#generate-bracket-modal').modal('show'); $('input[name=\'weightclass\']').val('{{ key }}');">
+                            Regenerate
+                        </button>
+                    {% else %}
+                        <button class="btn btn-primary" onclick="$('#generate-bracket-modal').modal('show'); $('input[name=\'weightclass\']').val('{{ key }}');">
+                            Generate
+                        </button>
+                    {% endif %}
                 </td></tr>
             {% endfor %}
         </table>
     </div>
+    <div class="modal hide fade" id="generate-bracket-modal">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>Generate Bracket</h3>
+      </div>
+      <div class="modal-body">
+        <form method='POST' class='form' id='generate-bracket-form' action="/{{ event.id }}/brackets/generate/">
+            {{ forms.form_field(generate_form.format, with_label=True) }}
+            {{ forms.form_field(generate_form.weightclass, with_label=False) }}
+            {{ forms.form_field(generate_form.submit, with_label=False) }}
+        </form>
+      </div>
+    </div>
+    <script>
+        $('#generate-bracket-modal').on('hidden', function () {
+            $('#generate-bracket-form')[0].reset();
+        })
+
+    </script>
 {% endblock %}

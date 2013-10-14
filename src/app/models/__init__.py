@@ -21,10 +21,19 @@ class EventSearchMixin(object):
         return cls.get_multiple(sql)
 
 
-class WeightclassSearchMixin(object):
+class WeightclassEventSearchMixin(object):
     @classmethod
-    def get_by_weightclass(cls, weightclass_code, order=None):
-        sql = "SELECT * FROM %s WHERE weightclass = '%s'" % (cls.__name__, weightclass_code)
+    def get_by_weightclass(cls, weightclass_code, event_id, order=None):
+        sql = "SELECT * FROM %s WHERE weightclass = '%s' AND event_id = %d" % (cls.__name__, weightclass_code, event_id)
         if order:
             sql = "%s ORDER BY %s" % (sql, order)
         return cls.get_multiple(sql)
+
+
+class CodeSearchMixin(object):
+    @classmethod
+    def get_by_code(cls, code, order=None):
+        sql = "SELECT * FROM %s WHERE code = '%s'" % (cls.__name__, code)
+        if order:
+            sql = "%s ORDER BY %s" % (sql, order)
+        return cls.get_single(sql)

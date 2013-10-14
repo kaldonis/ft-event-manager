@@ -1,4 +1,5 @@
-from app.models import BracketSearchMixin
+from app.domain.constants import CONSTANTS
+from app.models import BracketSearchMixin, DataInterface
 from app.models.database import DBObject
 
 
@@ -16,3 +17,58 @@ class Match(DBObject, BracketSearchMixin):
     winning_bot_id = None
     bot1_source_match = None
     bot2_source_match = None
+
+    @classmethod
+    def get_by_bracket_round(cls, bracket_id, round):
+        db = DataInterface(CONSTANTS.DB_NAME)
+        sql = "SELECT * FROM %s WHERE bracket_id = %d and round='%s' ORDER BY number" % (cls.__name__, bracket_id, round)
+
+        results = db.fetch_multiple(sql)
+        return [cls(**(item)) for item in results if item]
+
+    @classmethod
+    def get_by_bracket_source_match(cls, bracket_id, source_match):
+        db = DataInterface(CONSTANTS.DB_NAME)
+        sql = "SELECT * FROM %s WHERE bracket_id = %d AND (bot1_source_match = '%s' OR bot2_source_match = '%s')" % (cls.__name__, bracket_id, source_match, source_match)
+
+        result = db.fetch_one(sql)
+        return cls(**(result)) if result else None
+
+    def check(self):
+        """
+        see if we can determine a winner based on byes
+        """
+        if self.bot1_id == 0 and self.bot2_id:
+            self.winner(self.bot2_id)
+        elif self.bot2_id == 0 and self.bot1_id:
+            self.winner(self.bot1_id)
+
+    def winner(self, winning_bot_id):
+        """
+        declare a bot the winner, update matches accordingly
+        """
+        self.winning_bot_id = winning_bot_id
+        self.put()
+
+        if self.bot1_id == winning_bot_id:
+            losing_bot = self.bot2_id
+        else:
+            losing_bot = self.bot1_id
+
+        match_to_update = Match.get_by_bracket_source_match(self.bracket_id, "W%s%d" % (self.round, self.number))
+        if match_to_update:
+            if match_to_update.bot1_source_match == "W{$this->round}{$this->number}":
+                match_to_update.bot1_id = winning_bot_id
+            else:
+                match_to_update.bot2_id = winning_bot_id
+            match_to_update.put()
+            match_to_update.check()
+
+        match_to_update = Match.get_by_bracket_source_match(self.bracket_id, "L%s%d" % (self.round, self.number))
+        if match_to_update:
+            if match_to_update.bot1_source_match == "L{$this->round}{$this->number}":
+                match_to_update.bot1_id = losing_bot
+            else:
+                match_to_update.bot2_id = losing_bot
+            match_to_update.put()
+            match_to_update.check()
