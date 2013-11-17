@@ -98,7 +98,7 @@ class Bracket(DBObject, EventSearchMixin):
             # create the rest of the A side matches, one round at a time
             for i in xrange(2, num_rounds+1):
                 round_letter = chr(63+(2*i))  #A,C,E etc
-                for j in xrange(1, chart_size/pow(2, i)):
+                for j in xrange(1, chart_size/pow(2, i)+1):
                     bot1_source = 'W%s%d' % (chr(63+(2*i)-2), (j*2-1))  # ie WA1 (Winner of A1)
                     bot2_source = 'W%s%d' % (chr(63+(2*i)-2), (j*2))
                     match = Match(number=j,

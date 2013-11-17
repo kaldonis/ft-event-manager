@@ -73,7 +73,7 @@ class Match(DBObject, BracketSearchMixin):
 
         match_to_update = Match.get_by_bracket_source_match(self.bracket_id, "W%s%d" % (self.round, self.number))
         if match_to_update:
-            if match_to_update.bot1_source_match == "W{$this->round}{$this->number}":
+            if match_to_update.bot1_source_match == "W%s%d" % (self.round, self.number):
                 match_to_update.bot1_id = winning_bot_id
             else:
                 match_to_update.bot2_id = winning_bot_id
@@ -82,7 +82,7 @@ class Match(DBObject, BracketSearchMixin):
 
         match_to_update = Match.get_by_bracket_source_match(self.bracket_id, "L%s%d" % (self.round, self.number))
         if match_to_update:
-            if match_to_update.bot1_source_match == "L{$this->round}{$this->number}":
+            if match_to_update.bot1_source_match == "L%s%d" % (self.round, self.number):
                 match_to_update.bot1_id = losing_bot
             else:
                 match_to_update.bot2_id = losing_bot
