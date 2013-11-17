@@ -1,0 +1,121 @@
+{% extends "global.html" %}
+{% block title %}FingerTech Event Manager{% endblock %}
+{% block head %}
+{% endblock %}
+{% block bracketsnav1 %}
+        <li class='dropdown active'>
+{% endblock %}
+{% block bracketsnav2 %}
+        <li class='active'>
+{% endblock %}
+{% block main %}
+    <div class='row'>
+        <div class='span12'>
+            <h2 id='bracket-title'>{{ weightclass.name }} Bracket - {{ format.name }}</h2>
+        </div>
+    </div>
+    <div class='row'>
+        {% if format.code != "roundrobin" %}
+        <div class='bracket' style='margin-top:{{ margin_top }}'>
+            {% if b_final_round %}
+                <div class="round {{ b_final_round }}">
+                    <div class='final'>
+                        {% if b_winner %}
+                            <div class='team team1 b{{ b_winner.id }}'>{{ b_winner.name }}</div>
+                        {% else %}
+                            <div class='team team1'>&nbsp;</div>
+                        {% endif %}
+                    </div>
+				</div>
+
+                {% for round in rounds.B %}
+                    <div class="round {{ round }}">
+                        {% for match in matches.B %}
+                            {% if match.round == round %}
+                                <div class="match">
+                                    <div class="team team1 b{{ match.bot1_id }}">
+                                        {% if match.winning_bot_id %}
+                                            {% if match.winning_bot_id == match.bot1_id %}
+                                                <span class="matchWinner">{{ match.bot1.name }}</span>
+                                            {% else %}
+                                                <span class="matchLoser">{{ match.bot1.name }}</span>
+                                            {% endif %}
+                                        {% else %}
+                                            {{ match.bot1.name }}
+                                        {% endif %}
+                                    </div>
+                                    <div class="team team2 b{{ match.bot2_id }}">
+                                        {% if match.round != "B" and not match.bot2_id and match.bot2_source_match[:1] == "L" %}
+                                            <span style="font-style: italic;">Loser {{ match.bot2_source_match[1:] }}</span>
+                                        {% elif match.winning_bot_id %}
+                                            {% if match.winning_bot_id == match.bot2_id %}
+                                                <span class="matchWinner">{{ match.bot2.name }}</span>
+                                            {% else %}
+                                                <span class="matchLoser">{{ match.bot2.name }}</span>
+                                            {% endif %}
+                                        {% else %}
+                                            {{ match.bot2.name }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% for round in rounds.A %}
+                <div class="round {{ round }}">
+                    {% for match in matches.A %}
+                        {% if match.round == round %}
+                            <div class="{% if round == a_final_round and format.code == 'singleelim' %}final{% else %}match{% endif %}">
+                                <div class="team team1 {% if match.bot1_id %}b{{ match.bot1.id }}{% endif %}">
+                                    {% if match.winning_bot_id %}
+                                        {% if match.winning_bot_id == match.bot1_id %}
+                                            <span class="matchWinner">{{ match.bot1.name }}</span>
+                                        {% else %}
+                                            <span class="matchLoser">{{ match.bot1.name }}</span>
+                                        {% endif %}
+                                    {% else %}
+                                        {{ match.bot1.name }}
+                                    {% endif %}
+                                </div>
+                                <div class="team team2 {% if match.bot2_id %}b{{ match.bot2.id }}{% endif %}">
+                                    {% if match.winning_bot_id %}
+                                        {% if match.winning_bot_id == match.bot2_id %}
+                                            <span class="matchWinner">{{ match.bot2.name }}</span>
+                                        {% else %}
+                                            <span class="matchLoser">{{ match.bot2.name }}</span>
+                                        {% endif %}
+                                    {% elif format.code != 'singleelim' and match.round == a_final_round and match.bot2_id %}
+                                        <span style="font-style: italic;">Winner {{ match.bot2_source_match[1:] }}</span>
+                                    {% else %}
+                                        {{ match.bot2.name }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        {% else %}
+            ROUND ROBIN!
+        {% endif %}
+    </div>
+
+    <div class="modal hide fade" id="generate-bracket-modal">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>Generate Bracket</h3>
+      </div>
+      <div class="modal-body">
+        <form method='POST' class='form' id='generate-bracket-form' action="/{{ event.id }}/brackets/generate/">
+        </form>
+      </div>
+    </div>
+    <script>
+        $('#generate-bracket-modal').on('hidden', function () {
+            $('#generate-bracket-form')[0].reset();
+        })
+
+    </script>
+{% endblock %}

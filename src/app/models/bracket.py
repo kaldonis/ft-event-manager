@@ -180,6 +180,8 @@ class Bracket(DBObject, EventSearchMixin):
                     match_index += 1
                 bot_index += 1
 
+        return True
+
     def check_matches(self):
         """
         loop through all matches checking for byes that can be updated

@@ -19,7 +19,7 @@
             {% for key, value in event_brackets.iteritems() %}
                 <tr><td>
                     {% if value.generated %}
-                        <a href="/{{ event.id }}/brackets/{{ value.id }}/">
+                        <a href='{{ uri_for("single-bracket", event_id=event.id, bracket_id=value.bracket.id) }}'>
                     {% endif %}
                     <h5>{{ key|e }} - {{ value.total_bots }} competitor(s)</h5>
                     {% if value.generated %}
@@ -30,8 +30,12 @@
                         <button class="btn btn-warning" onclick="$('#generate-bracket-modal').modal('show'); $('input[name=\'weightclass\']').val('{{ key }}');">
                             Regenerate
                         </button>
-                    {% else %}
+                    {% elif value.total_bots > 1 %}
                         <button class="btn btn-primary" onclick="$('#generate-bracket-modal').modal('show'); $('input[name=\'weightclass\']').val('{{ key }}');">
+                            Generate
+                        </button>
+                    {% else %}
+                        <button class="btn disabled" onclick="alert('Cannot generate a bracket with fewer than 2 competitors');">
                             Generate
                         </button>
                     {% endif %}
@@ -45,7 +49,7 @@
         <h3>Generate Bracket</h3>
       </div>
       <div class="modal-body">
-        <form method='POST' class='form' id='generate-bracket-form' action="/{{ event.id }}/brackets/generate/">
+        <form method='POST' class='form' id='generate-bracket-form' action='{{ uri_for("generate-bracket", event_id=event.id) }}'>
             {{ forms.form_field(generate_form.format, with_label=True) }}
             {{ forms.form_field(generate_form.weightclass, with_label=False) }}
             {{ forms.form_field(generate_form.submit, with_label=False) }}

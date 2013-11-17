@@ -3,13 +3,20 @@ from webapp2_extras import jinja2
 
 from app.models.bracket import Bracket
 
+def jinja2_factory(app):
+    j = jinja2.Jinja2(app)
+    j.environment.globals.update({
+        # Set global variables.
+        'uri_for': webapp2.uri_for,
+        # ...
+    })
+    return j
 
 class BaseHandler(webapp2.RequestHandler):
 
     @webapp2.cached_property
     def jinja2(self):
-        # Returns a Jinja2 renderer cached in the app registry.
-        return jinja2.get_jinja2(app=self.app)
+        return jinja2.get_jinja2(factory=jinja2_factory, app=self.app)
 
     def render_response(self, _template, **context):
         # Renders a template and writes the result to the response.

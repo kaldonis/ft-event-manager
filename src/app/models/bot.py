@@ -31,6 +31,17 @@ class Bot(DBObject, BracketSearchMixin, EventSearchMixin, WeightclassEventSearch
 
         return cls(**(result)) if result else None
 
+    @classmethod
+    def bye(cls):
+        """
+        placeholder bot object for a bye
+        """
+        params = {
+            'name': '--bye--',
+            'id': 0
+        }
+        return cls(**(params))
+
     def register(self):
         """
         registers the bot

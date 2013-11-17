@@ -1,5 +1,7 @@
+from operator import attrgetter
+import math
 from webapp2 import uri_for
-from app.domain.format import FORMATS
+from app.domain.format import FORMATS, ROUND_ROBIN, DOUBLE_ELIMINATION, SINGLE_ELIMINATION
 from app.forms.bracket import GenerateBracketForm
 from app.handlers.base import BaseHandler
 from app.models.bot import Bot
@@ -77,3 +79,91 @@ class GenerateBracketHandler(BaseHandler):
                 bracket.delete()
 
         self.redirect(uri_for('single-bracket', event_id=event_id, bracket_id=bracket.id))
+
+
+class SingleBracketHandler(BaseHandler):
+    """
+    handler for displaying a single bracket
+    """
+    def get(self, event_id, bracket_id):
+        event = Event.get_by_id(event_id)
+        bracket = Bracket.get_by_id(bracket_id)
+        weightclass = Weightclass.get_by_code(bracket.weightclass_code)
+        format = FORMATS.get(bracket.format_code)
+        matches = Match.get_by_bracket(bracket_id)
+
+        ordered_matches = {'A': []}
+        rounds = {'A': []}
+        a_final_round = None
+        b_final_round = None
+        b_winner = None
+
+        if bracket.format_code != ROUND_ROBIN:
+            if bracket.format_code == DOUBLE_ELIMINATION:
+                ordered_matches['B'] = []
+                rounds['B'] = []
+
+            for match in matches:
+                match.populate_bot_entities()
+                ordered_matches[match.bracket_side].append(match)
+
+            # sort A side matches ascending by round, match number
+            ordered_matches['A'] = sorted(ordered_matches['A'], key=attrgetter('round', 'number'))
+
+            number_first_round_matches = sum(1 for m in ordered_matches['A'] if m.round == 'A')
+            if bracket.format_code == SINGLE_ELIMINATION:
+                a_final_round = chr(65+int((2*math.log(number_first_round_matches, 2))))
+            else:
+                a_final_round = chr(67+int((2*math.log(number_first_round_matches, 2))))
+
+            if ordered_matches.get('B'):
+                # sort B side matches desc by round, match number
+                ordered_matches['B'] = sorted(ordered_matches['B'], key=attrgetter('round', 'number'), reverse=True)
+
+                b_final_round = chr(66+int((4*(math.log(number_first_round_matches,2)))))
+
+                for match in ordered_matches.get('B'):
+                    if match.round not in rounds['B']:
+                        rounds['B'].append(match.round)
+
+                # determine b side winner, if applicable
+                for match in ordered_matches['B']:
+                    if match.round == b_final_round and match.number == 1:
+                        b_winner = Bot.get_by_id(match.winning_bot_id)
+
+        for match in ordered_matches.get('A'):
+            if match.round not in rounds['A']:
+                rounds['A'].append(match.round)
+
+        else:
+            # don't care for round robin about sort
+            ordered_matches['A'] = matches
+            number_first_round_matches = sum(1 for m in ordered_matches['A'] if m.round == 'A')
+
+        if bracket.format_code != SINGLE_ELIMINATION:
+            if number_first_round_matches < 4:
+                margin_top = "-50px"
+            elif number_first_round_matches < 8:
+                margin_top = "-100px"
+            elif number_first_round_matches < 16:
+                margin_top = "-250px"
+            elif number_first_round_matches < 32:
+                margin_top = "-500px"
+        else:
+            margin_top = "-50px"
+
+        context = {
+            'format': format,
+            'bracket': bracket,
+            'weightclass': weightclass,
+            'matches': ordered_matches,
+            'rounds': rounds,
+            'a_final_round': a_final_round,
+            'b_final_round': b_final_round,
+            'b_winner': b_winner,
+            'number_first_round_matches': number_first_round_matches,
+            'margin_top': margin_top,
+            'event': event
+        }
+
+        self.render_response('single-bracket.html', **context)

@@ -1,7 +1,7 @@
 from app.domain.constants import CONSTANTS
 from app.models import BracketSearchMixin, DataInterface
+from app.models.bot import Bot
 from app.models.database import DBObject
-
 
 class Match(DBObject, BracketSearchMixin):
     number = None
@@ -33,6 +33,22 @@ class Match(DBObject, BracketSearchMixin):
 
         result = db.fetch_one(sql)
         return cls(**(result)) if result else None
+
+    def populate_bot_entities(self):
+        # add bot1 and bot2 objects
+        if self.bot1_id:
+            self.bot1 = Bot.get_by_id(self.bot1_id)
+        elif self.bot1_id == 0:
+            self.bot1 = Bot.bye()
+        else:
+            self.bot1 = None
+
+        if self.bot2_id:
+            self.bot2 = Bot.get_by_id(self.bot2_id)
+        elif self.bot2_id == 0:
+            self.bot2 = Bot.bye()
+        else:
+            self.bot2 = None
 
     def check(self):
         """
