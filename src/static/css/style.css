@@ -190,6 +190,10 @@ select.error {
 	font-weight: 50;	
 }
 
+#countdown-table input {
+    font-size: 20px;
+}
+
 #countdown {
 	text-indent: -.12em;
 	font: 220px "Courier", sans-serif;
@@ -200,18 +204,35 @@ select.error {
 	width: 100%;
 }
 
-#botBlue {
+#botRed, #botBlue {
+    line-height: 1;
+}
+
+#botBlue a {
 	padding-left: 10%;
 	text-align: left;
 	color: blue;
+	display: block;
 }
 
-#botRed {
+#botRed a {
 	padding-right: 10%;
 	text-align: right;	
 	color: red;
+	display: block;
 }
 
-#timer {
-	padding: 0% 25%;
+#botBlue a:hover {
+	color: teal;
+	text-decoration: none;
+}
+
+#botRed a:hover {
+	color: maroon;
+	text-decoration: none;
+}
+
+#botRed a:focus, #botBlue a:focus {
+	text-decoration: none;
+	outline: 0;
 }

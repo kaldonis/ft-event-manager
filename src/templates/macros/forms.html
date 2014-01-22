@@ -7,7 +7,7 @@
     <div class="control-group {% if field.errors %}error{% endif %}">
         {% if with_label %}
             <label for="{{ field.id }}" class="control-label">
-                {{ field.label.text }}{% if field.flags.required %} *{% endif %}:
+                {{ field.label.text }}{% if field.flags.required %}*{% endif %}
             </label>
         {% endif %}
         <div class="controls">

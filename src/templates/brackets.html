@@ -1,6 +1,20 @@
 {% extends "global.html" %}
 {% block title %}FingerTech Event Manager{% endblock %}
 {% block head %}
+    <script type="text/javascript">
+        function deleteBracket(url) {
+            var doDelete = confirm('Are you sure you want to delete this bracket? Any match data will be lost.');
+            if(doDelete) {
+                window.location.href = url;
+            }
+        }
+        function regenerateBracket(url) {
+            var doRegen = confirm('Are you sure you want to regenerate this bracket? Any match data will be lost.');
+            if(doRegen) {
+                window.location.href = url;
+            }
+        }
+    </script>
 {% endblock %}
 {% block bracketsnav1 %}
         <li class='dropdown active'>
@@ -15,33 +29,56 @@
         </div>
     </div>
     <div class='row'>
-        <table class="table" id="bracket-table">
-            {% for key, value in event_brackets.iteritems() %}
-                <tr><td>
-                    {% if value.generated %}
-                        <a href='{{ uri_for("single-bracket", event_id=event.id, bracket_id=value.bracket.id) }}'>
-                    {% endif %}
-                    <h5>{{ key|e }} - {{ value.total_bots }} competitor(s)</h5>
-                    {% if value.generated %}
-                        </a>
-                    {% endif %}
-                </td><td>
-                    {% if value.generated %}
-                        <button class="btn btn-warning" onclick="$('#generate-bracket-modal').modal('show'); $('input[name=\'weightclass\']').val('{{ key }}');">
-                            Regenerate
-                        </button>
-                    {% elif value.total_bots > 1 %}
-                        <button class="btn btn-primary" onclick="$('#generate-bracket-modal').modal('show'); $('input[name=\'weightclass\']').val('{{ key }}');">
-                            Generate
-                        </button>
-                    {% else %}
-                        <button class="btn disabled" onclick="alert('Cannot generate a bracket with fewer than 2 competitors');">
-                            Generate
-                        </button>
-                    {% endif %}
-                </td></tr>
+        <table class="table">
+            {% for weightclass, brackets in event_brackets.iteritems() %}
+                <tr>
+                    <td colspan="2" class="box-header">
+                        {{ weightclass|e }}
+                    </td>
+                </tr>
+                {% if brackets|length == 0 %}
+                    <tr><td colspan="2">No brackets have been generated yet.</td></tr>
+                {% else %}
+                    <tr>
+                        <td>
+                            <div class='span12'>
+                                <table class='table table-hover'>
+                                    <thead>
+                                        <th>Name</th>
+                                        <th>Format</th>
+                                        <th>Competitors</th>
+                                        <th>Matches</th>
+                                        <th></th>
+                                        <th></th>
+                                    </thead>
+                                    <tbody>
+                                        {% for bracket in brackets %}
+                                            <tr>
+                                                <td class="bracket-name">
+                                                    <a href='{{ uri_for("single-bracket", event_id=event.id, bracket_id=bracket.bracket.id) }}'>{% if bracket.name %}{{ bracket.bracket.name|e }}{% else %}{{ bracket.format.name }}{% endif %}</a>
+                                                </td>
+                                                <td class="bracket-format">{{ bracket.format.name }}</td>
+                                                <td class="bracket-competitors">{{ bracket.total_bots }}</td>
+                                                <td class="bracket-matches">{{ bracket.completed_matches }} / {{ bracket.total_matches }} complete</td>
+                                                <td class="bracket-regenerate">
+                                                    <i class="icon-refresh pointer" onclick="regenerateBracket('{{ uri_for('regenerate-bracket', event_id=event.id, bracket_id=bracket.bracket.id) }}')"></i>
+                                                </td>
+                                                <td class="bracket-delete">
+                                                    <i class="icon-remove-sign pointer" onclick="deleteBracket('{{ uri_for('delete-bracket', event_id=event.id, bracket_id=bracket.bracket.id) }}')"></i>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                {% endif %}
             {% endfor %}
         </table>
+    </div>
+    <div class='row'>
+        <button class="btn btn-primary" onclick="$('#generate-bracket-modal').modal('show');">Generate a Bracket</button>
     </div>
     <div class="modal hide fade" id="generate-bracket-modal">
       <div class="modal-header">
@@ -50,8 +87,9 @@
       </div>
       <div class="modal-body">
         <form method='POST' class='form' id='generate-bracket-form' action='{{ uri_for("generate-bracket", event_id=event.id) }}'>
+            {{ forms.form_field(generate_form.weightclass, with_label=True) }}
             {{ forms.form_field(generate_form.format, with_label=True) }}
-            {{ forms.form_field(generate_form.weightclass, with_label=False) }}
+            {{ forms.form_field(generate_form.name, with_label=True) }}
             {{ forms.form_field(generate_form.submit, with_label=False) }}
         </form>
       </div>
@@ -60,6 +98,5 @@
         $('#generate-bracket-modal').on('hidden', function () {
             $('#generate-bracket-form')[0].reset();
         })
-
     </script>
 {% endblock %}

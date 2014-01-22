@@ -12,14 +12,15 @@ class Bracket(DBObject, EventSearchMixin):
     match_length = None
     format_code = None
     weightclass_code = None
+    name = None
 
     @classmethod
     def get_by_event_and_class(cls, event_id, weightclass_code):
         db = DataInterface(CONSTANTS.DB_NAME)
         sql = "SELECT * FROM %s WHERE event_id = %d AND weightclass_code = '%s'" % (cls.__name__, int(event_id), weightclass_code)
-        result = db.fetch_one(sql)
+        result = db.fetch_multiple(sql)
 
-        return cls(**(result)) if result else None
+        return [cls(**(item)) for item in result if item]
 
     def regenerate(self, format):
         """
@@ -34,6 +35,17 @@ class Bracket(DBObject, EventSearchMixin):
         self.format_code = format
         self.put()
         self.generate()
+
+    def delete(self):
+        """
+        delete a bracket
+        """
+        # delete any matches that have taken place
+        matches = Match.get_by_bracket(self.id)
+        for match in matches:
+            match.delete()
+
+        super(Bracket, self).delete()
 
     def generate(self):
         """
@@ -56,14 +68,12 @@ class Bracket(DBObject, EventSearchMixin):
             return False
 
         # generate a random array for the seeding
-        seeds = range(1, len(bots)+1)
+        seeds = range(0, len(bots))
         shuffle(seeds)
 
         # assign the seeds
-        seed_index = 0
-        for bot in bots:
-            bot.seed_number = seeds[seed_index]
-            seed_index += 1
+        for i, bot in enumerate(bots):
+            bot.seed_number = seeds[i]
             bot.bracket_id = self.id
             bot.put()
 
@@ -77,23 +87,40 @@ class Bracket(DBObject, EventSearchMixin):
                 chart_size *= 2
                 num_rounds += 1
 
-            # create first round matches
-            for i in xrange(1, chart_size/2+1):
-                bot1_seed = i
-                bot2_seed = chart_size-i+1
+            # create first round matches, do our best to avoid a team fighting itself first round
+            # will regenerate up to 5 times until it gives up on avoiding first round team fighting self
+            for _ in xrange(0,5):
+                matches = []
+                for i in xrange(0, chart_size/2):
+                    bot1_seed = i
+                    bot2_seed = chart_size - 1 - i
 
-                bot1 = Bot.get_by_bracket_seed(self.event_id, self.id, bot1_seed)
-                bot2 = Bot.get_by_bracket_seed(self.event_id, self.id, bot2_seed)
-                bot1_id = bot1.id
-                bot2_id = bot2.id if bot2 else 0
+                    bot1 = Bot.get_by_bracket_seed(self.event_id, self.id, bot1_seed)
+                    bot2 = Bot.get_by_bracket_seed(self.event_id, self.id, bot2_seed)
+                    bot1_id = bot1.id
+                    bot2_id = bot2.id if bot2 else 0
 
-                match = Match(number=match_ordering[chart_size/2][i-1],
-                              bracket_id=self.id,
-                              bracket_side="A",
-                              round="A",
-                              bot1_id=bot1_id,
-                              bot2_id=bot2_id)
-                match.put()
+                    match = Match(number=match_ordering[chart_size/2][i],
+                                  bracket_id=self.id,
+                                  bracket_side="A",
+                                  round="A",
+                                  bot1_id=bot1_id,
+                                  bot2_id=bot2_id)
+                    matches.append(match)
+
+                conflict = False
+                for match in matches:
+                    if match.bot1_id > 0 and match.bot2_id > 0:
+                        bot1 = Bot.get_by_id(match.bot1_id)
+                        bot2 = Bot.get_by_id(match.bot2_id)
+                        if bot1.team_name == bot2.team_name:
+                            conflict = True
+                            break
+
+                if not conflict:
+                    break
+
+            [match.put() for match in matches]
 
             # create the rest of the A side matches, one round at a time
             for i in xrange(2, num_rounds+1):
@@ -151,7 +178,7 @@ class Bracket(DBObject, EventSearchMixin):
                 # insert final A-side match
                 round_letter = chr(63+(2*(num_rounds+1)))
                 bot1_source = 'W%s1' % chr(63+(2*num_rounds))
-                bot2_source = 'W%s1' % chr(60+(2*num_b_rounds))
+                bot2_source = 'W%s1' % chr(60+(2*(num_b_rounds+1)))
                 match = Match(number=1,
                               bracket_id=self.id,
                               bracket_side="A",
@@ -165,7 +192,6 @@ class Bracket(DBObject, EventSearchMixin):
                 match.check()
 
         else:  #ROUNDROBIN
-            bots = Bot.get_by_bracket(self.id)
             bot_index = 1  # start at 1 because bot0 can't fight bot0 etc
             for bot in bots:
                 match_index = 1

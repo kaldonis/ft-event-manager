@@ -1,6 +1,110 @@
 {% extends "global.html" %}
 {% block title %}FingerTech Event Manager{% endblock %}
 {% block head %}
+    <script>
+        var matchLength = {{ bracket.match_length }} * 6000;
+        $(function() {
+            $( "#match-results" ).dialog({
+                autoOpen: false,
+                height: 700,
+                width: 960,
+                modal: true,
+                position: "center",
+                close: function() {
+                    document.getElementById('editmatch').reset();
+                }
+            });
+        });
+
+        function editMatch(matchid, bot1id, bot1name, bot2id, bot2name, event)
+        {
+            //document.getElementById('bot1radio').value=bot1id;
+            //document.getElementById('bot2radio').value=bot2id;
+            document.getElementById('botBlue').innerHTML="<a href='{{ uri_for('match-report', event_id=event.id, bracket_id=bracket.id) }}?match_id="+matchid+"&winning_bot_id="+bot1id+"'>"+bot1name+"</a>";
+            document.getElementById('botRed').innerHTML="<a href='{{ uri_for('match-report', event_id=event.id, bracket_id=bracket.id) }}?match_id="+matchid+"&winning_bot_id="+bot2id+"'>"+bot2name+"</a>";
+            //document.getElementById('matchid').value=matchid;
+            //document.getElementById('eventid2').value=event;
+            $('.countdown-wrapper h1').html(formatTime(matchLength));
+            $("#match-results").dialog( "open" );
+        }
+
+        $(function() {
+            $("table#round-robin").on('mouseover mouseleave', '.do-highlight', function(e) {
+                if (e.type == 'mouseover') {
+                  $(this).parent().addClass("hover");
+                  $("colgroup").eq($(this).index()).addClass("hover");
+                } else {
+                  $(this).parent().removeClass("hover");
+                  $("colgroup").eq($(this).index()).removeClass("hover");
+                }
+            });
+
+            $("div.bracket").on('mouseover mouseleave', 'div.team', function(e) {
+                if (e.type == 'mouseover') {
+                    var classList = this.className.split(/\s+/);
+                    for (var i = 0; i < classList.length; i++) {
+                        if (classList[i] != 'team' && classList[i] != 'team1' && classList[i] != 'team2' && classList[i] != 'hover2' && classList[i] && !(/^\s*$/.test(classList[i]))) {
+                            $('div.'+classList[i]).addClass("hover2");
+                        }
+                    }
+                } else {
+                    var classList = this.className.split(/\s+/);
+                    for (var i = 0; i < classList.length; i++) {
+                        if (classList[i] != 'team' && classList[i] != 'team1' && classList[i] != 'team2' && classList[i] != 'hover2' && classList[i] && !(/^\s*$/.test(classList[i]))) {
+                            $('div.'+classList[i]).removeClass("hover2");
+                        }
+                    }
+                }
+            });
+        });
+
+        var CountdownTimer = new (function() {
+            var $countdown,
+                $form, // Form used to change the countdown time
+                incrementTime = 70,
+                currentTime = matchLength,
+                updateTimer = function() {
+                    $countdown.html(formatTime(currentTime));
+                    if (currentTime == 0) {
+                        CountdownTimer.Timer.stop();
+                        timerComplete();
+                        CountdownTimer.resetCountdown();
+                        return;
+                    }
+                    currentTime -= incrementTime / 10;
+                    if (currentTime < 0) currentTime = 0;
+                },
+                timerComplete = function() {
+                    alert('The match is over!');
+                },
+                init = function() {
+                    $countdown = $('#countdown');
+                    CountdownTimer.Timer = $.timer(updateTimer, incrementTime, false);
+                    $form = $('#CountdownTimerform');
+                    $form.bind('submit', function() {
+                        CountdownTimer.resetCountdown();
+                        return false;
+                    });
+                };
+            this.resetCountdown = function() {
+                currentTime = matchLength;
+                this.Timer.stop().once();
+            };
+            $(init);
+        });
+
+        // Common functions
+        function pad(number, length) {
+            var str = '' + number;
+            while (str.length < length) {str = '0' + str;}
+            return str;
+        }
+        function formatTime(time) {
+            var min = parseInt(time / 6000),
+                sec = parseInt(time / 100) - (min * 60);
+            return (min > 0 ? pad(min, 1) : "0") + ":" + pad(sec, 2);
+        }
+    </script>
 {% endblock %}
 {% block bracketsnav1 %}
         <li class='dropdown active'>
@@ -9,11 +113,31 @@
         <li class='active'>
 {% endblock %}
 {% block main %}
+    <div id="match-results" title="Match Result" class='dialog-form'>
+        <div id='countdown-wrapper'>
+            <div id='countdown-content'>
+                <table id="countdown-table">
+                    <tr><td id='botRed'></td></tr>
+                    <tr><td id='timer'>
+                        <h1 id="countdown">03:00</h1>
+                        <form id="CountdownTimerform">
+                            <input type='button' value='Play/Pause' onclick='CountdownTimer.Timer.toggle();' />
+                            <input type='button' value='Stop/Reset' onclick='CountdownTimer.resetCountdown();' />
+                        </form>
+                    </td></tr>
+                    <tr><td id='botBlue'></td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <div class='row'>
         <div class='span12'>
             <h2 id='bracket-title'>{{ weightclass.name }} Bracket - {{ format.name }}</h2>
         </div>
     </div>
+{% endblock %}
+{% block outside %}
     <div class='row'>
         {% if format.code != "roundrobin" %}
         <div class='bracket' style='margin-top:{{ margin_top }}'>
@@ -36,12 +160,19 @@
                                     <div class="team team1 b{{ match.bot1_id }}">
                                         {% if match.winning_bot_id %}
                                             {% if match.winning_bot_id == match.bot1_id %}
-                                                <span class="matchWinner">{{ match.bot1.name }}</span>
+                                                <span class="matchWinner">{% if match.bot1.name|length > 14 %}<marquee scrollamount="2">{{ match.bot1.name }}</marquee>{% else %}{{ match.bot1.name }}{% endif %}</span>
                                             {% else %}
-                                                <span class="matchLoser">{{ match.bot1.name }}</span>
+                                                <span class="matchLoser">{% if match.bot1.name|length > 14 %}<marquee scrollamount="2">{{ match.bot1.name }}</marquee>{% else %}{{ match.bot1.name }}{% endif %}</span>
                                             {% endif %}
                                         {% else %}
                                             {{ match.bot1.name }}
+                                        {% endif %}
+                                    </div>
+                                    <div class='number'>
+                                        {% if match.bot1 and match.bot2 and match.bot1.id != 0 and match.bot2.id != 0 %}
+                                            <a href='javascript:void(0)' onclick='editMatch({{ match.id }}, {{ match.bot1.id }}, "{{ match.bot1.name }}", {{ match.bot2.id }}, "{{ match.bot2.name }}", {{ event.id }})'>{{ match.round }}{{ match.number }}</a>
+                                        {% else %}
+                                            {{ match.round }}{{ match.number }}
                                         {% endif %}
                                     </div>
                                     <div class="team team2 b{{ match.bot2_id }}">
@@ -49,9 +180,9 @@
                                             <span style="font-style: italic;">Loser {{ match.bot2_source_match[1:] }}</span>
                                         {% elif match.winning_bot_id %}
                                             {% if match.winning_bot_id == match.bot2_id %}
-                                                <span class="matchWinner">{{ match.bot2.name }}</span>
+                                                <span class="matchWinner">{% if match.bot2.name|length > 14 %}<marquee scrollamount="2">{{ match.bot1.name }}</marquee>{% else %}{{ match.bot2.name }}{% endif %}</span>
                                             {% else %}
-                                                <span class="matchLoser">{{ match.bot2.name }}</span>
+                                                <span class="matchLoser">{% if match.bot2.name|length > 14 %}<marquee scrollamount="2">{{ match.bot1.name }}</marquee>{% else %}{{ match.bot2.name }}{% endif %}</span>
                                             {% endif %}
                                         {% else %}
                                             {{ match.bot2.name }}
@@ -67,29 +198,36 @@
                 <div class="round {{ round }}">
                     {% for match in matches.A %}
                         {% if match.round == round %}
-                            <div class="{% if round == a_final_round and format.code == 'singleelim' %}final{% else %}match{% endif %}">
+                            <div class="{% if round == a_final_round and format.code != 'singleelim' %}final{% else %}match{% endif %}">
                                 <div class="team team1 {% if match.bot1_id %}b{{ match.bot1.id }}{% endif %}">
                                     {% if match.winning_bot_id %}
                                         {% if match.winning_bot_id == match.bot1_id %}
-                                            <span class="matchWinner">{{ match.bot1.name }}</span>
+                                            <span class="matchWinner">{% if match.bot1.name|length > 14 %}<marquee scrollamount="2">{{ match.bot1.name }}</marquee>{% else %}{{ match.bot1.name }}{% endif %}</span>
                                         {% else %}
-                                            <span class="matchLoser">{{ match.bot1.name }}</span>
+                                            <span class="matchLoser">{% if match.bot1.name|length > 14 %}<marquee scrollamount="2">{{ match.bot1.name }}</marquee>{% else %}{{ match.bot1.name }}{% endif %}</span>
                                         {% endif %}
                                     {% else %}
                                         {{ match.bot1.name }}
                                     {% endif %}
                                 </div>
+                                <div class='number'>
+                                    {% if match.bot1 and match.bot2 and match.bot1.id != 0 and match.bot2.id != 0 %}
+                                        <a href='javascript:void(0)' onclick='editMatch({{ match.id }}, {{ match.bot1.id }}, "{{ match.bot1.name }}", {{ match.bot2.id }}, "{{ match.bot2.name }}", {{ event.id }})'>{{ match.round }}{{ match.number }}</a>
+                                    {% else %}
+                                        {{ match.round }}{{ match.number }}
+                                    {% endif %}
+                                </div>
                                 <div class="team team2 {% if match.bot2_id %}b{{ match.bot2.id }}{% endif %}">
                                     {% if match.winning_bot_id %}
                                         {% if match.winning_bot_id == match.bot2_id %}
-                                            <span class="matchWinner">{{ match.bot2.name }}</span>
+                                            <span class="matchWinner">{% if match.bot2.name|length > 14 %}<marquee scrollamount="2">{{ match.bot2.name }}</marquee>{% else %}{{ match.bot2.name }}{% endif %}</span>
                                         {% else %}
-                                            <span class="matchLoser">{{ match.bot2.name }}</span>
+                                            <span class="matchLoser">{% if match.bot2.name|length > 14 %}<marquee scrollamount="2">{{ match.bot2.name }}</marquee>{% else %}{{ match.bot2.name }}{% endif %}</span>
                                         {% endif %}
-                                    {% elif format.code != 'singleelim' and match.round == a_final_round and match.bot2_id %}
-                                        <span style="font-style: italic;">Winner {{ match.bot2_source_match[1:] }}</span>
-                                    {% else %}
+                                    {% elif match.bot2 %}
                                         {{ match.bot2.name }}
+                                    {% elif format.code != 'singleelim' and match.round == a_final_round %}
+                                        <span style="font-style: italic;">Winner {{ match.bot2_source_match[1:] }}</span>
                                     {% endif %}
                                 </div>
                             </div>
@@ -97,25 +235,13 @@
                     {% endfor %}
                 </div>
             {% endfor %}
+			<div class='round {{ final_round }}'>
+                <div class="{% if format.code != 'singleelim' %}winner{% else %}match nobg{% endif %}">
+                    <div class='team team1 b{{ a_winner.id }}'>{% if a_winner %}{% if a_winner.name|length > 14 %}<marquee scrollamount="2">{{ a_winner.name }}</marquee>{% else %}{{ a_winner.name }}{% endif %}{% else %}&nbsp;{% endif %}</div>
+                </div>
+            </div>
         {% else %}
             ROUND ROBIN!
         {% endif %}
     </div>
-
-    <div class="modal hide fade" id="generate-bracket-modal">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h3>Generate Bracket</h3>
-      </div>
-      <div class="modal-body">
-        <form method='POST' class='form' id='generate-bracket-form' action="/{{ event.id }}/brackets/generate/">
-        </form>
-      </div>
-    </div>
-    <script>
-        $('#generate-bracket-modal').on('hidden', function () {
-            $('#generate-bracket-form')[0].reset();
-        })
-
-    </script>
 {% endblock %}

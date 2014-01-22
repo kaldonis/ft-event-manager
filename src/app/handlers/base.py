@@ -1,5 +1,6 @@
 import webapp2
 from webapp2_extras import jinja2
+from app.domain.format import FORMATS
 
 from app.models.bracket import Bracket
 
@@ -24,7 +25,9 @@ class BaseHandler(webapp2.RequestHandler):
         # append global context stuff (for navbar etc)
         event = context.get('event')
         if event:
-            brackets = Bracket.get_by_event(event.id, order='weightclass_code asc')
+            brackets = Bracket.get_by_event(event.id, order='weightclass_code, name')
+            for bracket in brackets:
+                setattr(bracket, 'format_name', FORMATS.get(bracket.format_code).get('name'))
             context.update({'brackets': brackets})
 
         rv = self.jinja2.render_template(_template, **context)

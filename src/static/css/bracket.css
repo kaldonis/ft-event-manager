@@ -1,10 +1,20 @@
-#bracket-table {
-    width: 50%;
+.box-header {
+    font-weight: bold;
+    font-size: 16px;
+    background-color: #EEE;
+    border: 1px solid #DDD;
 }
 
-#bracket-table td {
-    vertical-align: middle !important;
-    text-align: center !important;
+.bracket-name {
+    width: 29%;
+}
+
+.bracket-format, .bracket-competitors, bracket-matches {
+    width: 23%;
+}
+
+.bracket-delete {
+    width: 5%
 }
 
 /* Old */
@@ -60,6 +70,7 @@ div.bracket div.round div.team {
 	vertical-align: middle;	
 	color: #FFF;
 	overflow: hidden;
+	width: 110px;
 }
 
 div.bracket div.round div.team span.matchWinner {

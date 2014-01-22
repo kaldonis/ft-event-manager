@@ -22,10 +22,14 @@ table#bot-table td.delete {
     text-align: center;
 }
 
+table#bot-table thead {
+    background-color: #F9F9F9;
+}
+
 #add-bot-btn {
     position: absolute;
     right: 0px;
-    bottom: 0px;
+    bottom: 10px;
 }
 
 #import-bots-form input[type="file"] {

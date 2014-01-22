@@ -1,10 +1,9 @@
-import json
 from app.domain.constants import CONSTANTS
-from app.models import BracketSearchMixin, EventSearchMixin, WeightclassEventSearchMixin, DataInterface
+from app.models import EventSearchMixin, WeightclassEventSearchMixin, DataInterface
 from app.models.database import DBObject
 
 
-class Bot(DBObject, BracketSearchMixin, EventSearchMixin, WeightclassEventSearchMixin):
+class Bot(DBObject, EventSearchMixin, WeightclassEventSearchMixin):
     bid = None
     registered_ind = None
     event_id = None
@@ -30,6 +29,19 @@ class Bot(DBObject, BracketSearchMixin, EventSearchMixin, WeightclassEventSearch
         result = db.fetch_one(sql)
 
         return cls(**(result)) if result else None
+
+    @classmethod
+    def get_by_bracket(cls, bracket_id):
+        """
+        alternative to the method available in BracketSearchMixin, parses through Matches instead
+        """
+        from app.models.match import Match
+        matches = Match.get_by_bracket_round(bracket_id, 'A')
+        bots = []
+        for match in matches:
+            bots += [match.bot1_id, match.bot2_id]
+
+        return [cls.get_by_id(bot_id) for bot_id in bots if bot_id]
 
     @classmethod
     def bye(cls):

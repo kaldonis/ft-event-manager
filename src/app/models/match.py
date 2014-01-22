@@ -1,6 +1,5 @@
 from app.domain.constants import CONSTANTS
 from app.models import BracketSearchMixin, DataInterface
-from app.models.bot import Bot
 from app.models.database import DBObject
 
 class Match(DBObject, BracketSearchMixin):
@@ -35,6 +34,8 @@ class Match(DBObject, BracketSearchMixin):
         return cls(**(result)) if result else None
 
     def populate_bot_entities(self):
+
+        from app.models.bot import Bot
         # add bot1 and bot2 objects
         if self.bot1_id:
             self.bot1 = Bot.get_by_id(self.bot1_id)
@@ -58,25 +59,24 @@ class Match(DBObject, BracketSearchMixin):
             self.winner(self.bot2_id)
         elif self.bot2_id == 0 and self.bot1_id:
             self.winner(self.bot1_id)
+        elif self.bot1_id == 0 and self.bot2_id == 0:
+            self.winner(0)
 
     def winner(self, winning_bot_id):
         """
         declare a bot the winner, update matches accordingly
         """
-        self.winning_bot_id = winning_bot_id
+        self.winning_bot_id = int(winning_bot_id)
         self.put()
 
-        if self.bot1_id == winning_bot_id:
-            losing_bot = self.bot2_id
-        else:
-            losing_bot = self.bot1_id
+        losing_bot = self.bot2_id if self.bot1_id == self.winning_bot_id else self.bot1_id
 
         match_to_update = Match.get_by_bracket_source_match(self.bracket_id, "W%s%d" % (self.round, self.number))
         if match_to_update:
             if match_to_update.bot1_source_match == "W%s%d" % (self.round, self.number):
-                match_to_update.bot1_id = winning_bot_id
+                match_to_update.bot1_id = self.winning_bot_id
             else:
-                match_to_update.bot2_id = winning_bot_id
+                match_to_update.bot2_id = self.winning_bot_id
             match_to_update.put()
             match_to_update.check()
 

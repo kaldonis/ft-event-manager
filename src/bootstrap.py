@@ -35,7 +35,8 @@ BOOTSTRAP_CREATE_TABLES = """
             ,event_id integer not null references event(id)
             ,match_length real not null
             ,format_code text not null references format(code)
-            ,weightclass_code text not null references weightclass(code)
+            ,weightclass_code text not null
+            ,name text not null
     );
     CREATE TABLE "bracketsession" (
             bracket_id integer not null references bracket(id)

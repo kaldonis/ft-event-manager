@@ -14,6 +14,7 @@
   		<script src="/static/js/jquery-ui.js"></script>
 		<script src="/static/js/bootstrap.min.js"></script>
 		<script src="/static/js/jquery.gritter.js"></script>
+		<script src="/static/js/jquery.timer.js"></script>
 		<script src="/static/js/EM.Notification.js"></script>
 
         {% block head %}{% endblock %}
@@ -34,9 +35,13 @@
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href='{{ uri_for("brackets", event_id=event.id) }}'>All</a></li>
+                                    <li><a href='{{ uri_for("brackets", event_id=event.id) }}'>Manage</a></li>
                                     {% for item in brackets %}
-                                        <li><a href='{{ uri_for("single-bracket", event_id=event.id, bracket_id=item.id) }}'>{{ item.weightclass_code }}</a></li>
+                                        <li>
+                                            <a href='{{ uri_for("single-bracket", event_id=event.id, bracket_id=item.id) }}'>
+                                                {{ item.weightclass_code }}{% if item.name %} ({{ item.name }}){% endif %} - {{ item.format_name }}
+                                            </a>
+                                        </li>
                                     {% endfor %}
                                 </ul>
                             </li>
@@ -53,6 +58,7 @@
             <div class='container'>
             {% block main %}{% endblock %}
             </div>
+            <div>{% block outside %}{% endblock %}</div>
             <?php getFooter($page); ?>
         </div>
 	</body>

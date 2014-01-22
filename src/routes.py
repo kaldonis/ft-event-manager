@@ -21,8 +21,11 @@ ROUTES = [
 
     # Bracket Handlers
     Route('/<event_id:\d+>/brackets/', handler='app.handlers.bracket.BracketListHandler', name='brackets'),
-    Route('/<event_id:\d+>/brackets/<bracket_id:\d+>/', handler='app.handlers.bracket.SingleBracketHandler', name='single-bracket'),
     Route('/<event_id:\d+>/brackets/generate/', handler='app.handlers.bracket.GenerateBracketHandler', name='generate-bracket'),
+    Route('/<event_id:\d+>/brackets/<bracket_id:\d+>/', handler='app.handlers.bracket.SingleBracketHandler', name='single-bracket'),
+    Route('/<event_id:\d+>/brackets/<bracket_id:\d+>/match/', handler='app.handlers.bracket.MatchReportHandler', name='match-report'),
+    Route('/<event_id:\d+>/brackets/<bracket_id:\d+>/delete/', handler='app.handlers.bracket.DeleteBracketHandler', name='delete-bracket'),
+    Route('/<event_id:\d+>/brackets/<bracket_id:\d+>/regenerate/', handler='app.handlers.bracket.RegenerateBracketHandler', name='regenerate-bracket'),
 
     # Session Handlers
     Route('/<event_id:\d+>/sessions/', handler='app.handlers.session.SessionListHandler', name='sessions'),
