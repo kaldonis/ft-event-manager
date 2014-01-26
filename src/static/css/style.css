@@ -236,3 +236,22 @@ select.error {
 	text-decoration: none;
 	outline: 0;
 }
+
+.icon-remove-sign {
+    font-size: 16px;
+    color: red;
+}
+
+.icon-ok-sign {
+    font-size: 16px;
+    color: green;
+}
+
+.admin-edit-table input[type="text"] {
+    margin-bottom: 0px;
+}
+
+input[type="text"] {
+    height: 28px !important;
+    line-height: 28px !important;
+}

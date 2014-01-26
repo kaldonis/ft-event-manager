@@ -7,7 +7,9 @@ class Weightclass(DBObject, CodeSearchMixin):
     code = None
     name = None
     description = None
-    default_match_length_= None
+    default_match_length = None
+
+    EDITABLE_FIELDS = ['code', 'default_match_length', 'description', 'name']
 
     @classmethod
     def get_by_event(cls, event_id, order=None):
@@ -16,3 +18,15 @@ class Weightclass(DBObject, CodeSearchMixin):
 
         results = db.fetch_multiple(sql)
         return [cls(**(item)) for item in results if item]
+
+    def to_dict(self):
+        """
+        to dict
+        """
+        return {
+            'id': self.id,
+            'code': self.code,
+            'name': self.name,
+            'description': self.description,
+            'default_match_length': self.default_match_length
+        }

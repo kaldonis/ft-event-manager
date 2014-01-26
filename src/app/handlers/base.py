@@ -3,6 +3,8 @@ from webapp2_extras import jinja2
 from app.domain.format import FORMATS
 
 from app.models.bracket import Bracket
+from app.models.event import Event
+
 
 def jinja2_factory(app):
     j = jinja2.Jinja2(app)
@@ -29,6 +31,10 @@ class BaseHandler(webapp2.RequestHandler):
             for bracket in brackets:
                 setattr(bracket, 'format_name', FORMATS.get(bracket.format_code).get('name'))
             context.update({'brackets': brackets})
+
+        events = Event.get_all(order='start_date desc')
+        context['events'] = [{'id': '#', 'name': 'Create new event'}] if not events else \
+            [{'id': event.id, 'name': event.name} for event in events]
 
         rv = self.jinja2.render_template(_template, **context)
         self.response.write(rv)

@@ -33,5 +33,10 @@ ROUTES = [
     # Schedule Handlers
     Route('/<event_id:\d+>/schedule/', handler='app.handlers.schedule.ScheduleListHandler', name='schedule'),
 
+    # Admin Handlers
+    Route('/admin/', handler='app.handlers.admin.AdminHandler', name='admin'),
+    Route('/admin/table/<table:\w+>/', handler='app.handlers.admin.EditTableHandler', name='edit-code-table'),
+    Route('/admin/table/<table:\w+>/<action:\w+>/', handler='app.handlers.admin.EditTableHandler', name='edit-or-delete-code-table'),
+
     (r'/static/(.+)', StaticFileHandler)
 ]

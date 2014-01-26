@@ -12,12 +12,9 @@ class CreateEventHandler(BaseHandler):
     def get_context(self):
         create_form = CreateEventForm()
 
-        events = Event.get_all(order='start_date desc')
 
         context = {
-            'create_form': create_form,
-            'events': [{'id': '#', 'name': 'Create new event'}] if not events else
-                      [{'id': event.id, 'name': event.name} for event in events]
+            'create_form': create_form
         }
         return context
 

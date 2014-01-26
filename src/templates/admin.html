@@ -1,0 +1,32 @@
+{% extends "global.html" %}
+{% block title %}FingerTech Event Manager{% endblock %}
+{% block nav %}
+<li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        Events
+        <b class="caret"></b>
+    </a>
+    <ul class="dropdown-menu">
+        {% for item in events %}
+            <li><a href='{{ uri_for("event", event_id=item.id) }}'>{{ item.name }}</a></li>
+        {% endfor %}
+    </ul>
+</li>
+{% endblock %}
+{% block adminnav %}
+    <li class="active">
+{% endblock %}
+{% block main %}
+    <div class='row'>
+        <div class='span12'>
+            <h1>Administration</h1>
+        </div>
+    </div>
+    <div class='row'>
+        <ul>
+            {% for table in tables %}
+                <li><a href="{{ uri_for('edit-code-table', table=table) }}">{{ table }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

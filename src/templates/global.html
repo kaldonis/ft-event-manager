@@ -52,6 +52,7 @@
                         {% block schedulenav %}<li>{% endblock %}<a href='{{ uri_for("schedule", event_id=event.id) }}'>Schedule</a></li>
                         <li><a href='/'>Exit Event</a></li>
                     {% endblock %}
+                    {% block adminnav %}<li>{% endblock %}<a href='{{ uri_for("admin") }}'>Admin</a></li>
                 </ul>
               </div>
             </div>

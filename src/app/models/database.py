@@ -16,7 +16,7 @@ class DBObject(object):
         self.__dict__.update(kwargs)
 
     def attribute_values(self):
-        attr_and_values = ((attr, getattr(self, attr)) for attr in dir(self) if not attr.startswith("__") and attr != 'db' and attr != 'id')
+        attr_and_values = ((attr, getattr(self, attr)) for attr in dir(self) if not attr.startswith("__") and attr != 'db' and attr != 'id' and attr != 'EDITABLE_FIELDS')
         return {attr: value for attr, value in attr_and_values if not callable(value)}
 
     @classmethod
@@ -45,20 +45,22 @@ class DBObject(object):
         return cls(**result) if result else None
 
     def delete(self):
-        sql = "DELETE FROM %s WHERE id = %d" % (self.__class__.__name__, self.id)
+        sql = "DELETE FROM %s WHERE id = %d" % (self.__class__.__name__, int(self.id))
         return self.db.delete(sql)
 
     def put(self):
         attribute_values = self.attribute_values()
         if self.id:
             sql = "UPDATE %s SET %s WHERE id = %d" \
-                  % (self.__class__.__name__, ', '.join(["%s=?" % key for key in attribute_values.keys()]), self.id)
+                  % (self.__class__.__name__, ', '.join(["%s=?" % key for key in attribute_values.keys()]), int(self.id))
         else:
             sql = "INSERT INTO %s (%s) VALUES (%s)" \
                   % (self.__class__.__name__, ', '.join(attribute_values.keys()), ', '.join(["?" for _ in attribute_values.values()]))
         id = self.db.put(sql, attribute_values.values())
         if id:
             self.id = id
+        else:
+            return id
 
     def to_dict(self):
         return self.__dict__
