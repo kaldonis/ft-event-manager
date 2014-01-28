@@ -1,9 +1,9 @@
-from wtforms import Form, TextField, DateField, SubmitField, validators, ValidationError
+from wtforms import Form, DateField, SubmitField, validators, ValidationError, StringField
 
 
 class CreateEventForm(Form):
-    name = TextField('Event Name', validators=[validators.required()])
-    location = TextField('Location', validators=[validators.required()])
+    name = StringField('Event Name', validators=[validators.required()])
+    location = StringField('Location', validators=[validators.required()])
     start_date = DateField('Start Date', validators=[validators.required()], format='%Y-%m-%d')
     end_date = DateField('End Date', validators=[validators.required()], format='%Y-%m-%d')
     submit = SubmitField('Submit')

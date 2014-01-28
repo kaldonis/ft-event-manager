@@ -11,9 +11,6 @@
         <b class="caret"></b>
     </a>
     <ul class="dropdown-menu">
-        {% for item in events %}
-            <li><a href='{{ uri_for("event", event_id=item.id) }}'>{{ item.name }}</a></li>
-        {% endfor %}
     </ul>
 </li>
 {% endblock %}

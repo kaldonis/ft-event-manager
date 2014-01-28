@@ -1,3 +1,5 @@
+import logging
+import os
 import webapp2
 from webapp2_extras import jinja2
 from app.domain.format import FORMATS
@@ -7,10 +9,10 @@ from app.models.event import Event
 
 
 def jinja2_factory(app):
-    j = jinja2.Jinja2(app)
+    j = jinja2.Jinja2(app, {'template_path': os.path.join(os.path.dirname(__file__), '..\\..\\templates')})
     j.environment.globals.update({
         # Set global variables.
-        'uri_for': webapp2.uri_for,
+        'uri_for': webapp2.uri_for
         # ...
     })
     return j
@@ -33,8 +35,7 @@ class BaseHandler(webapp2.RequestHandler):
             context.update({'brackets': brackets})
 
         events = Event.get_all(order='start_date desc')
-        context['events'] = [{'id': '#', 'name': 'Create new event'}] if not events else \
-            [{'id': event.id, 'name': event.name} for event in events]
+        context['events'] = [{'id': event.id, 'name': event.name} for event in events]
 
         rv = self.jinja2.render_template(_template, **context)
         self.response.write(rv)

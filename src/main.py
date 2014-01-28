@@ -8,7 +8,7 @@ import bootstrap
 from routes import ROUTES
 
 config = {
-    'webapp2_static.static_file_path': './static',
+    'webapp2_static.static_file_path': 'static',
     'globals': {
         'uri_for' : webapp2.uri_for
     },

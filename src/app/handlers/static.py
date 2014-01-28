@@ -1,11 +1,12 @@
+import logging
 import os
 import mimetypes
 import webapp2
 
 class StaticFileHandler(webapp2.RequestHandler):
     def get(self, path):
-        abs_path = os.path.abspath(os.path.join(self.app.config.get('webapp2_static.static_file_path', 'static'), path))
-        if os.path.isdir(abs_path) or abs_path.find(os.getcwd()) != 0:
+        abs_path = os.path.abspath(os.path.join(os.path.join(os.path.dirname(__file__), '..\\..\\static'), path))
+        if os.path.isdir(abs_path):
             self.response.set_status(403)
             return
         try:
