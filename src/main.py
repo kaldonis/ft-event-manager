@@ -1,5 +1,6 @@
 import logging
 import os
+import webbrowser
 
 import webapp2
 from app.domain.constants import CONSTANTS
@@ -22,6 +23,7 @@ def main():
     from paste import httpserver
     logging.basicConfig(level=logging.INFO)
     logging.info("Event manager started")
+    webbrowser.open("http://127.0.0.1:8080")
     httpserver.serve(web_app, host='127.0.0.1', port='8080')
     logging.info("Event manager terminated")
 

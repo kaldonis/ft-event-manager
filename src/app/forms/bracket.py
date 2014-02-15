@@ -1,14 +1,14 @@
-from wtforms import Form, SubmitField, validators, SelectField, TextField
+from wtforms import Form, SubmitField, validators, SelectField, StringField, BooleanField
 
 from app.domain.format import FORMATS
 
 
 class GenerateBracketForm(Form):
-    format = SelectField('Format',
+    format = SelectField(label='Format',
                          validators=[validators.required()],
                          choices=[(key, value.get('name')) for key, value in FORMATS.iteritems()])
-    weightclass = SelectField('Class',
+    weightclass = SelectField(label='Class',
                               validators=[validators.required()],
                               choices=[])
-    name = TextField('Bracket Name (optional)')
-    submit = SubmitField('Generate')
+    name = StringField(label='Bracket Name (optional)')
+    submit = SubmitField(label='Generate')
