@@ -1,0 +1,74 @@
+{% extends "global.html" %}
+{% block title %}FingerTech Event Manager{% endblock %}
+{% block bracketsnav1 %}
+    <li class='dropdown active'>
+{% endblock %}
+{% block bracketsnav2 %}
+    <li class='active'>
+{% endblock %}
+{% block head %}
+    <script src="/static/js/knockout-2.3.0.js"></script>
+    <script src="/static/js/knockout-sortable.js"></script>
+{% endblock %}
+{% block main %}
+    <div class='row'>
+        <div class='span12'>
+            <h1>Bracket Seeding</h1>
+            <h2>{{ formatting.bracket_name(bracket) }}</h2>
+        </div>
+    </div>
+    <div class='row'>
+        <p>Drag and drop the bots below to your desired seeding order:</p>
+        <ul id='sort-bots' data-bind="sortable: bots">
+            <li><span data-bind="text: $index()+1"></span>. <span data-bind="text: name"></span></li>
+        </ul>
+        <button class="btn btn-primary" data-bind="click: submitSeeding">Submit</button>
+    </div>
+    <script type="text/javascript">
+        var ViewModel = function(bots) {
+            var self = this;
+
+            self.bots = ko.observableArray();
+            self.botIds = ko.computed(function() {
+                var ids = [];
+                $.each(self.bots(), function(i, bot) {
+                    ids.push(bot.id);
+                });
+                return ids;
+            });
+
+            self.BotViewModel = function(bot) {
+                var self = this;
+
+                self.id = bot.id;
+                self.name = bot.name;
+            };
+
+            self.submitSeeding = function() {
+                data = {
+                    bracket_id: {{ bracket.id }},
+                    seeding: self.botIds()
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ uri_for('generate-bracket', event_id=event.id) }}',
+                    data: data,
+                    dataType: 'json',
+                    complete: function() {
+                        window.location = "{{ uri_for('single-bracket', event_id=event.id, bracket_id=bracket.id) }}";
+                    }
+                });
+            };
+
+            self.init = function(bots) {
+                $.each(bots, function(index, bot) {
+                    self.bots.push(new self.BotViewModel(bot));
+                });
+            };
+
+            self.init(bots);
+        };
+
+        ko.applyBindings(new ViewModel({{ bots|safe }}));
+    </script>
+{% endblock %}

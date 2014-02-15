@@ -1,0 +1,3 @@
+{% macro bracket_name(bracket) -%}
+    {{ bracket.weightclass_code }}{% if bracket.name %} ({{ bracket.name }}){% endif %} - {{ bracket.format_name() }}
+{%- endmacro %}

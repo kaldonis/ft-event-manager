@@ -1,3 +1,4 @@
+from app.models.bracket import Bracket
 from webapp2 import redirect, uri_for
 from app.forms.event import CreateEventForm
 from app.handlers.base import BaseHandler
@@ -35,7 +36,7 @@ class CreateEventHandler(BaseHandler):
             self.redirect("%d/" % event.id)
 
 
-class SelectEventHandler(BaseHandler):
+class ViewEventHandler(BaseHandler):
     """
     view specific event
     """
@@ -50,10 +51,13 @@ class SelectEventHandler(BaseHandler):
         bots = Bot.get_by_event(event_id)
         registered_bots = [bot for bot in bots if bot.registered_ind == 'Y']
 
+        brackets = Bracket.get_by_event(event.id)
+
         context = {
             'event': event,
             'bots_registered': len(registered_bots),
-            'bots_total': len(bots)
+            'bots_total': len(bots),
+            'brackets': brackets
         }
 
         self.render_response('event.html', **context)

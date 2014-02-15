@@ -1,6 +1,7 @@
 from random import shuffle
 import math
 from app.domain.constants import CONSTANTS
+from app.domain.format import FORMATS
 from app.models import EventSearchMixin
 from app.models.bot import Bot
 from app.models.database import DBObject, DataInterface
@@ -13,6 +14,11 @@ class Bracket(DBObject, EventSearchMixin):
     format_code = None
     weightclass_code = None
     name = None
+    manual_seed = None
+    generated = None
+
+    def format_name(self):
+        return FORMATS.get(self.format_code, {}).get('name')
 
     @classmethod
     def get_by_event_and_class(cls, event_id, weightclass_code):
@@ -26,7 +32,6 @@ class Bracket(DBObject, EventSearchMixin):
         """
         regenerate the bracket
         """
-
         # delete any matches that have taken place
         matches = Match.get_by_bracket(self.id)
         for match in matches:
@@ -47,13 +52,13 @@ class Bracket(DBObject, EventSearchMixin):
 
         super(Bracket, self).delete()
 
-    def generate(self):
+    def generate(self, seeding=None):
         """
         generate the bracket
         """
-        # find all registered bots in the given class
 
-        bots = Bot.get_by_weightclass(self.weightclass_code, self.event_id)
+        # find all registered bots in the given class
+        bots = Bot.get_by_weightclass_registered(self.weightclass_code, self.event_id)
 
         # defines the order for matches to spread out the byes better, probably a formula for this but didn't take time to figure it out
         match_ordering = {
@@ -67,15 +72,23 @@ class Bracket(DBObject, EventSearchMixin):
         if(len(bots) < 2):
             return False
 
-        # generate a random array for the seeding
-        seeds = range(0, len(bots))
-        shuffle(seeds)
+        # manual seeding, if passed in (is dumb, assumes # of seeds matches # of bots)
+        if seeding:
+            for i, bot_id in enumerate(seeding):
+                bot = Bot.get_by_id(bot_id)
+                bot.seed_number = i
+                bot.bracket_id = self.id
+                bot.put()
+        else:
+            # generate a random array for the seeding
+            seeds = range(0, len(bots))
+            shuffle(seeds)
 
-        # assign the seeds
-        for i, bot in enumerate(bots):
-            bot.seed_number = seeds[i]
-            bot.bracket_id = self.id
-            bot.put()
+            # assign the seeds
+            for i, bot in enumerate(bots):
+                bot.seed_number = seeds[i]
+                bot.bracket_id = self.id
+                bot.put()
 
         # generate matches
         if self.format_code.upper() != 'ROUNDROBIN':

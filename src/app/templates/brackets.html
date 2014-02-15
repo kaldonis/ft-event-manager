@@ -61,10 +61,14 @@
                                                 <td class="bracket-competitors">{{ bracket.total_bots }}</td>
                                                 <td class="bracket-matches">{{ bracket.completed_matches }} / {{ bracket.total_matches }} complete</td>
                                                 <td class="bracket-regenerate">
-                                                    <i class="icon-refresh pointer" onclick="regenerateBracket('{{ uri_for('regenerate-bracket', event_id=event.id, bracket_id=bracket.bracket.id) }}')"></i>
+                                                    <button class="btn btn-primary" onclick="regenerateBracket('{{ uri_for('regenerate-bracket', event_id=event.id, bracket_id=bracket.bracket.id) }}')">
+                                                        <i class="icon-refresh pointer icon-white"></i>
+                                                    </button>
                                                 </td>
                                                 <td class="bracket-delete">
-                                                    <i class="icon-remove-sign pointer" onclick="deleteBracket('{{ uri_for('delete-bracket', event_id=event.id, bracket_id=bracket.bracket.id) }}')"></i>
+                                                    <button class="btn btn-danger" onclick="deleteBracket('{{ uri_for('delete-bracket', event_id=event.id, bracket_id=bracket.bracket.id) }}')">
+                                                        <i class="icon-remove-sign pointer icon-white"></i>
+                                                    </button>
                                                 </td>
                                             </tr>
                                         {% endfor %}
@@ -81,19 +85,19 @@
         <button class="btn btn-primary" onclick="$('#generate-bracket-modal').modal('show');">Generate a Bracket</button>
     </div>
     <div class="modal hide fade" id="generate-bracket-modal">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h3>Generate Bracket</h3>
-      </div>
-      <div class="modal-body">
-        <form method='POST' class='form' id='generate-bracket-form' action='{{ uri_for("generate-bracket", event_id=event.id) }}'>
-            {{ forms.form_field(generate_form.weightclass, with_label=True) }}
-            {{ forms.form_field(generate_form.format, with_label=True) }}
-            {{ forms.form_field(generate_form.name, with_label=True) }}
-            {{ forms.form_field(generate_form.seeding, with_label=False) }}
-            {{ forms.form_field(generate_form.submit, with_label=False) }}
-        </form>
-      </div>
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>Generate Bracket</h3>
+        </div>
+        <div class="modal-body">
+            <form method='POST' class='form' id='generate-bracket-form' action='{{ uri_for("generate-bracket", event_id=event.id) }}'>
+                {{ forms.form_field(generate_form.weightclass, with_label=True) }}
+                {{ forms.form_field(generate_form.format, with_label=True) }}
+                {{ forms.form_field(generate_form.name, with_label=True) }}
+                {{ forms.form_field(generate_form.manual_seeding, with_label=False) }}
+                {{ forms.form_field(generate_form.submit, with_label=False) }}
+            </form>
+        </div>
     </div>
     <script>
         $('#generate-bracket-modal').on('hidden', function () {

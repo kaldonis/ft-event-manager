@@ -11,4 +11,5 @@ class GenerateBracketForm(Form):
                               validators=[validators.required()],
                               choices=[])
     name = StringField(label='Bracket Name (optional)')
+    manual_seeding = BooleanField(label='Seed Manually (no effect on Round Robin)')
     submit = SubmitField(label='Generate')

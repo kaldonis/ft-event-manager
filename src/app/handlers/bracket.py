@@ -1,3 +1,4 @@
+import json
 from operator import attrgetter
 import math
 from webapp2 import uri_for
@@ -25,7 +26,7 @@ class BracketListHandler(BaseHandler):
         weightclass_choices = []
         brackets = {}
         for weightclass in weightclasses:
-            bots = Bot.get_by_weightclass(weightclass.code, event.id)
+            bots = Bot.get_by_weightclass_registered(weightclass.code, event.id)
             if len(bots) > 1:
                 weightclass_choices.append((weightclass.code, '%s (%d bots)' % (weightclass.name, len(bots))))
             brackets[weightclass.name] = []
@@ -61,25 +62,67 @@ class GenerateBracketHandler(BaseHandler):
         if not event:
             self.redirect(uri_for('home'))
 
-        weightclass = Weightclass.get_by_code(self.request.POST['weightclass'])
-        if not weightclass:
-            raise ValueError("bad weightclass")
+        manual_seed = self.request.POST.get('manual_seeding')
+        bracket_id = self.request.POST.get('bracket_id')
+        if not bracket_id:
+            weightclass = Weightclass.get_by_code(self.request.POST['weightclass'])
+            if not weightclass:
+                raise ValueError("bad weightclass")
 
-        format = FORMATS.get(self.request.POST['format'])
-        if not format:
-            raise ValueError("bad format")
+            format = FORMATS.get(self.request.POST['format'])
+            if not format:
+                raise ValueError("bad format")
 
-        name = self.request.POST['name']
-        bracket = Bracket(event_id=event.id,
-                          match_length=weightclass.default_match_length,
-                          format_code=format['code'],
-                          weightclass_code=weightclass.code,
-                          name=name)
-        bracket.put()
-        if not bracket.generate():
-            bracket.delete()
+            if format.get('code') == 'roundrobin':
+                manual_seed = False
 
-        self.redirect(uri_for('single-bracket', event_id=event_id, bracket_id=bracket.id))
+            name = self.request.POST['name']
+            bracket = Bracket(event_id=event.id,
+                              match_length=weightclass.default_match_length,
+                              format_code=format['code'],
+                              weightclass_code=weightclass.code,
+                              name=name,
+                              manual_seed=manual_seed or False,
+                              generated=False)
+            bracket.put()
+        else:
+            bracket = Bracket.get_by_id(bracket_id)
+
+        seeding = self.request.POST.getall('seeding[]')
+        if manual_seed and not seeding:
+            self.redirect(uri_for('manual-seed', event_id=event_id, bracket_id=bracket.id))
+        else:
+            result = bracket.generate(seeding)
+            if result:
+                bracket.generated=True
+                bracket.put()
+            else:
+                bracket.delete()
+
+            self.redirect(uri_for('single-bracket', event_id=event_id, bracket_id=bracket.id), abort=False)
+
+
+class ManualSeedingHandler(BaseHandler):
+    """
+    render the page for manually seeding a bracket
+    """
+    def get(self, event_id, bracket_id):
+        event = Event.get_by_id(event_id)
+        if not event:
+            self.redirect(uri_for('home'))
+
+        bracket = Bracket.get_by_id(bracket_id)
+        if not bracket:
+            self.redirect(uri_for('brackets', event_id=event_id))
+
+        bots = Bot.get_by_weightclass_registered(bracket.weightclass_code, event.id)
+
+        context = {
+            'event': event,
+            'bracket': bracket,
+            'bots': json.dumps([{'id': bot.id, 'name': bot.name} for bot in bots])
+        }
+        self.render_response('seed.html', **context)
 
 
 class RegenerateBracketHandler(BaseHandler):
@@ -109,6 +152,9 @@ class SingleBracketHandler(BaseHandler):
         weightclass = Weightclass.get_by_code(bracket.weightclass_code)
         format = FORMATS.get(bracket.format_code)
         matches = Match.get_by_bracket(bracket_id)
+
+        if bracket.manual_seed and not bracket.generated:
+            self.redirect(uri_for('manual-seed', event_id=event_id, bracket_id=bracket.id))
 
         ordered_matches = {'A': []}
         rounds = {'A': []}

@@ -31,6 +31,18 @@
     <div class='row'>
         <div class='span6'>
             <h3>Brackets</h3>
+            <p>
+                {% if brackets %}
+                    {% for item in brackets %}
+                        <a href="{{ uri_for('single-bracket', event_id=event.id, bracket_id=item.id) }}">
+                            {{ formatting.bracket_name(item) }}
+                        </a><br/>
+                    {% endfor %}
+                {% else %}
+                    No brackets have been created yet
+                {% endif %}
+            </p>
+            <a href='/{{ event.id }}/brackets/'>Manage Brackets</a>
         </div>
         <div class='span6'>
             <h3>Schedule</h3>
