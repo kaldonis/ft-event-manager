@@ -11,7 +11,7 @@
                 modal: true,
                 position: "center",
                 close: function() {
-                    document.getElementById('editmatch').reset();
+                    CountdownTimer.resetCountdown();
                 }
             });
         });
@@ -25,7 +25,8 @@
             //document.getElementById('matchid').value=matchid;
             //document.getElementById('eventid2').value=event;
             $('.countdown-wrapper h1').html(formatTime(matchLength));
-            $("#match-results").dialog( "open" );
+            $('#match-results').dialog( "open" );
+            $('#timer-start').focus();
         }
 
         $(function() {
@@ -121,7 +122,7 @@
                     <tr><td id='timer'>
                         <h1 id="countdown">03:00</h1>
                         <form id="CountdownTimerform">
-                            <input type='button' value='Play/Pause' onclick='CountdownTimer.Timer.toggle();' />
+                            <input id='timer-start' type='button' value='Play/Pause' onclick='CountdownTimer.Timer.toggle();' />
                             <input type='button' value='Stop/Reset' onclick='CountdownTimer.resetCountdown();' />
                         </form>
                     </td></tr>
