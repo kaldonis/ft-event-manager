@@ -8,7 +8,8 @@ from app.models.event import Event
 
 
 def jinja2_factory(app):
-    j = jinja2.Jinja2(app, {'template_path': os.path.join(os.path.dirname(__file__), '..\\templates')})
+    logging.info("template path: %s", os.path.join(os.path.dirname(__file__), '../../templates'))
+    j = jinja2.Jinja2(app, {'template_path': os.path.join(os.path.dirname(__file__), '../../templates')})
     j.environment.globals.update({
         # Set global variables.
         'uri_for': webapp2.uri_for

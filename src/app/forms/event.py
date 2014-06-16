@@ -4,8 +4,8 @@ from wtforms import Form, DateField, SubmitField, validators, ValidationError, S
 class CreateEventForm(Form):
     name = StringField('Event Name', validators=[validators.required()])
     location = StringField('Location', validators=[validators.required()])
-    start_date = DateField('Start Date', validators=[validators.required()], format='%Y-%m-%d')
-    end_date = DateField('End Date', validators=[validators.required()], format='%Y-%m-%d')
+    start_date = DateField('Start Date (YYYY-MM-DD)', validators=[validators.required()], format='%Y-%m-%d')
+    end_date = DateField('End Date (YYYY-MM-DD)', validators=[validators.required()], format='%Y-%m-%d')
     submit = SubmitField('Submit')
 
     def validate_end_date(form, field):
