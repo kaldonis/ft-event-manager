@@ -294,7 +294,7 @@ div.bracket div.G div.winner {
 div#bracket-rr {
 	display: block;
 	border-collapse: collapse;
-	margin-bottom: 100px;
+	margin: 100px 0px;
 }
 
 table#round-robin {

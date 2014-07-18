@@ -58,7 +58,7 @@ class Bracket(DBObject, EventSearchMixin):
         """
 
         # find all registered bots in the given class
-        bots = Bot.get_by_weightclass_registered(self.weightclass_code, self.event_id)
+        bots = Bot.get_by_weightclass_registered(self.weightclass_code, self.event_id, order="id")
 
         # defines the order for matches to spread out the byes better, probably a formula for this but didn't take time to figure it out
         match_ordering = {

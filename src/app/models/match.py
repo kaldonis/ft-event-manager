@@ -20,7 +20,7 @@ class Match(DBObject, BracketSearchMixin):
     @classmethod
     def get_by_bracket_round(cls, bracket_id, round):
         db = DataInterface(CONSTANTS.DB_NAME)
-        sql = "SELECT * FROM %s WHERE bracket_id = %d and round='%s' ORDER BY number" % (cls.__name__, bracket_id, round)
+        sql = "SELECT * FROM %s WHERE bracket_id = %d and round='%s' ORDER BY number" % (cls.__name__, int(bracket_id), round)
 
         results = db.fetch_multiple(sql)
         return [cls(**(item)) for item in results if item]
@@ -28,7 +28,7 @@ class Match(DBObject, BracketSearchMixin):
     @classmethod
     def get_by_bracket_source_match(cls, bracket_id, source_match):
         db = DataInterface(CONSTANTS.DB_NAME)
-        sql = "SELECT * FROM %s WHERE bracket_id = %d AND (bot1_source_match = '%s' OR bot2_source_match = '%s')" % (cls.__name__, bracket_id, source_match, source_match)
+        sql = "SELECT * FROM %s WHERE bracket_id = %d AND (bot1_source_match = '%s' OR bot2_source_match = '%s')" % (cls.__name__, int(bracket_id), source_match, source_match)
 
         result = db.fetch_one(sql)
         return cls(**(result)) if result else None
@@ -50,6 +50,11 @@ class Match(DBObject, BracketSearchMixin):
             self.bot2 = Bot.bye()
         else:
             self.bot2 = None
+
+        if self.winning_bot_id:
+            self.winning_bot = Bot.get_by_id(self.winning_bot_id)
+        else:
+            self.winning_bot = None
 
     def check(self):
         """

@@ -242,7 +242,47 @@
                 </div>
             </div>
         {% else %}
-            ROUND ROBIN!
+            <div id='bracket-rr'>
+                <table id='round-robin'>
+                    {% for number in range(0, bots|count+1) %}
+                        <colgroup></colgroup>
+                    {% endfor %}
+                    <thead>
+                        <tr>
+                            <th></th>
+                            {% for bot in bots %}
+                                <th class='do-highlight'>
+                                    <span class='rr-bot-name'>{{ bot.name }}</span>
+                                </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bot in bots %}
+                            <tr>
+                                <td class='do-highlight'><span class='rr-bot-name'>{{ bot.name }}</span></td>
+                                {% for number in range(0, loop.index) %}
+                                    <td class='rr-blank'></td>
+                                {% endfor %}
+                                {% set outerLoopIndex = loop.index-1 %}
+                                {% for number in range(outerLoopIndex, bots|count-1) %}
+                                    {% set matchIndex = ((outerLoopIndex*bots|count - outerLoopIndex*(outerLoopIndex+1)/2) + (loop.index-1))|int %}
+                                    {% set match = matches.A[matchIndex] %}
+                                    {% if match.winning_bot_id %}
+                                        <td class='rr-match do-highlight'>
+                                            <a href='javascript:void(0)' onclick='editMatch({{ match.id }}, {{ match.bot1.id }}, "{{ match.bot1.name }}", {{ match.bot2.id }}, "{{ match.bot2.name }}", {{ event.id }})'>
+                                                <span class='match-decided'>{{ match.winning_bot.name }}</span>
+                                            </a>
+                                        </td>
+                                    {% else %}
+                                        <td class='rr-match do-highlight match-undecided' onclick='editMatch({{ match.id }}, {{ match.bot1.id }}, "{{ match.bot1.name }}", {{ match.bot2.id }}, "{{ match.bot2.name }}", {{ event.id }})'></td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% endif %}
     </div>
 {% endblock %}

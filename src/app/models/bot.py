@@ -40,7 +40,7 @@ class Bot(DBObject, EventSearchMixin, WeightclassEventSearchMixin):
         bots = []
         for match in matches:
             bots += [match.bot1_id, match.bot2_id]
-
+        bots = list(set(bots))
         return [cls.get_by_id(bot_id) for bot_id in bots if bot_id]
 
     @classmethod

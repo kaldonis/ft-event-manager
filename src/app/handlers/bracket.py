@@ -152,9 +152,14 @@ class SingleBracketHandler(BaseHandler):
         weightclass = Weightclass.get_by_code(bracket.weightclass_code)
         format = FORMATS.get(bracket.format_code)
         matches = Match.get_by_bracket(bracket_id)
+        bots = Bot.get_by_bracket(bracket_id)
+        bots.sort(key=lambda x: x.id)
 
         if bracket.manual_seed and not bracket.generated:
             self.redirect(uri_for('manual-seed', event_id=event_id, bracket_id=bracket.id))
+
+        for match in matches:
+            match.populate_bot_entities()
 
         ordered_matches = {'A': []}
         rounds = {'A': []}
@@ -171,7 +176,6 @@ class SingleBracketHandler(BaseHandler):
                 rounds['B'] = []
 
             for match in matches:
-                match.populate_bot_entities()
                 ordered_matches[match.bracket_side].append(match)
 
             # sort A side matches ascending by round, match number
@@ -202,9 +206,9 @@ class SingleBracketHandler(BaseHandler):
                 b_winner = ordered_matches['B'][0].winning_bot_id
                 b_winner = Bot.get_by_id(b_winner) if b_winner else None
 
-        for match in ordered_matches.get('A'):
-            if match.round not in rounds['A']:
-                rounds['A'].append(match.round)
+            for match in ordered_matches.get('A'):
+                if match.round not in rounds['A']:
+                    rounds['A'].append(match.round)
 
         else:
             # don't care for round robin about sort
@@ -236,7 +240,8 @@ class SingleBracketHandler(BaseHandler):
             'b_winner': b_winner,
             'number_first_round_matches': number_first_round_matches,
             'margin_top': margin_top,
-            'event': event
+            'event': event,
+            'bots': bots
         }
 
         self.render_response('single-bracket.html', **context)
